@@ -31,5 +31,9 @@
   "bugs": {
     "url": "https://github.com/Kingles/memories/issues"
   },
-  "homepage": "https://github.com/Kingles/memories"
+  "homepage": "https://github.com/Kingles/memories",
+  "engines": {
+    "node": "0.10.x",
+    "npm": "1.2.x"
+  }
 }
