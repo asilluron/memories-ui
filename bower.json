@@ -1,0 +1,20 @@
+{
+  "name": "memories",
+  "version": "0.0.0",
+  "homepage": "https://github.com/Kingles/memories",
+  "authors": [
+    "m.emori.es team"
+  ],
+  "main": "public/js/memapp.js",
+  "moduleType": [
+    "amd"
+  ],
+  "license": "private",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
