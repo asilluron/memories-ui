@@ -1,5 +1,6 @@
 var hapi = require('hapi');
 var request_http = require('request');
+var Path = require('path');
 
 var port = process.env.PORT ? parseInt(process.env.PORT, 10) : 8800;
 
