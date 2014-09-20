@@ -1,4 +1,6 @@
 define(function () {
   "use strict";
-  return {};
+  return {
+    API_URL: "http://memories-api.herokuapp.com/",
+  };
 });
