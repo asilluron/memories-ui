@@ -1,5 +1,8 @@
-define(['src/providers/UserResource'
-], function(UserResource) {
-    return angular.module("memapp.providers", ["ngResource"])
-        .factory("UserResource", UserResource);
+define([
+  'src/providers/UserResource',
+  'src/providers/MemoryResource'
+], function (UserResource, MemoryResource) {
+  return angular.module("memapp.providers", ["ngResource"])
+    .factory("MemoryResource", MemoryResource)
+    .factory("UserResource", UserResource);
 });

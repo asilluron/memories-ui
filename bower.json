@@ -28,6 +28,8 @@
     "angular-resource": "~1.2.25",
     "angular-ui-router": "~0.2.11",
     "requirejs": "~2.1.15",
-    "angular-cookies": "~1.2.25"
+    "angular-cookies": "~1.2.25",
+    "font-awesome": "~4.2.0",
+    "bootstrap-sass-official": "~3.2.0+2"
   }
 }
