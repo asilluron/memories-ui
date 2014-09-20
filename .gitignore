@@ -29,3 +29,6 @@ node_modules
 
 # Bower deps
 app/vendor
+
+#env for Foreman
+.env
