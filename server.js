@@ -51,6 +51,34 @@ server.route({
     }
 });
 
+//Login route
+server.route({
+    method: 'POST',
+    path: '/login',
+    handler: function(request, reply) {
+        var url = "http://" + request.payload.username + ":" + request.payload.password + "@m" + process.env.API_URL + "/login";
+        request_http({
+                url: url
+            },
+            function(error, response, body) {
+                if (error) {
+                    reply(JSON.stringify(error));
+                } else {
+                    var json = JSON.parse(body);
+                    if (json.token) {
+                        reply.redirect("/").state('jwt', json.token, {
+                            encoding: 'none'
+                        });
+                    } else {
+                        reply.view("login");
+                    }
+
+                }
+            }
+        );
+    }
+});
+
 server.start(function() {
     console.log("Hapi server started @ " + server.info.uri);
 });
