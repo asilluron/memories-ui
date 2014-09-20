@@ -17,6 +17,21 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
       $interpolateProvider.startSymbol('{[{')
         .endSymbol('}]}');
 
+      var removeTrailingSlash = function (path, query) {
+        if (path !== '/' && path.charAt(path.length - 1) === '/') {
+          return path.substring(0, path.length - 1) + query;
+        }
+      };
+      $urlRouterProvider.rule(function ($injector, $location) {
+        var url = $location.url();
+
+        var queryIndex = url.indexOf('?');
+        if (queryIndex === -1) {
+          return removeTrailingSlash(url, "");
+        } else {
+          return removeTrailingSlash(url.substring(0, queryIndex), url.substring(queryIndex));
+        }
+      });
       $urlRouterProvider.otherwise("/");
 
       $stateProvider
@@ -35,9 +50,13 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
           templateUrl: "templates/memory.html",
           controller: "MemoryCtrl",
           resolve: {
-            memory: ['$stateParams', 'MemoryResource', function ($stateParams, MemoryResource) {
-              return MemoryResource.get({id: $stateParams.id});
-            }]
+            memory: ['$stateParams', 'MemoryResource',
+              function ($stateParams, MemoryResource) {
+                return MemoryResource.get({
+                  id: $stateParams.id
+                });
+              }
+            ]
           }
         })
         .state('memories.chat', {
