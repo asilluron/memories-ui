@@ -49,7 +49,7 @@ define(function () {
       MemoryResource.save($scope.memory)
         .$promise
         .then(function (response) {
-          $state.go('memories.view', response._id);
+          $state.go('memories.view', {id: response._id});
         }, function (response) {
           if (!response.status) {
             $scope.errorMessage = "Could not connect to server";

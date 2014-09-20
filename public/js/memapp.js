@@ -56,7 +56,7 @@ define('src/controllers/EditMemoryCtrl',[],function () {
       MemoryResource.save($scope.memory)
         .$promise
         .then(function (response) {
-          $state.go('memories.view', response._id);
+          $state.go('memories.view', {id: response._id});
         }, function (response) {
           if (!response.status) {
             $scope.errorMessage = "Could not connect to server";
@@ -87,6 +87,17 @@ define('src/controllers/MemoriesCtrl',[],function () {
 define('src/controllers/MemoryCtrl',[],function () {
   function MemoryCtrl($scope, memory) {
     $scope.memory = memory;
+    $scope.loadError = null;
+    if (memory.$promise) {
+      $scope.loading = true;
+      memory.$promise.then(null, function (error) {
+        $scope.loadError = error;
+      }).finally(function () {
+        $scope.loading = false;
+      });
+    } else {
+      $scope.loading = false;
+    }
   }
 
   return ["$scope", "memory", MemoryCtrl];
