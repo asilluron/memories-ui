@@ -11562,3 +11562,24 @@ body {
   margin-bottom: 0; }
   .memories__nav .logo {
     font-size: 3em; }
+
+.radio-selected {
+  color: #5bc0de; }
+
+label {
+  font-weight: normal; }
+
+.wrapping-label {
+  display: block; }
+
+.help-block {
+  color: white; }
+
+.checkbox, .radio {
+  color: white; }
+
+.text-lg {
+  font-size: 18px; }
+
+.text-sm {
+  font-size: 12px; }
