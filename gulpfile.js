@@ -4,7 +4,7 @@
 var config = {
 	paths: {
 		src: {
-			scripts: "app/src/app/**/*.js",
+			scripts: "app/src/**/*.js",
 			styles: "app/src/css/**/*.scss",
 			livereload: ["public/**/*"],
 			vendor: "app/vendor/**"
