@@ -26,7 +26,7 @@
   };
 
   var require_config = {
-    "baseUrl": "/base/app",
+    "baseUrl": "/base/src/app",
     "deps": ["angular", "angular-mocks", "sinon", "angular-resource", "jasmine-sinon"],
     "paths": {
       "angular": "vendor/angular/angular",
