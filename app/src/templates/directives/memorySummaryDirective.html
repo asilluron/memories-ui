@@ -1,5 +1,5 @@
 <div ui-sref="memories.view({id: memory._id})" class="memory-summary" ng-style='{"background-image": memory.about.primaryMoment.imageUrl}'>
-	{{memory.name}}
+	{{memory.about.name}}
 	<ul class="participant-list">
 		<li ng-repeat="participant in memory.participants">
 			{{participant.user.preferredName}}
