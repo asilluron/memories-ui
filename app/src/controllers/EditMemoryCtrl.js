@@ -1,12 +1,26 @@
 define(function () {
-  function EditMemoryCtrl($scope, MemoryResource) {
+  function EditMemoryCtrl($scope, $state, MemoryResource) {
     // TODO: handle edit mode
     $scope.memory = {
-      name: "",
-      shareability: "private",
+      about: {
+        name: ""
+      },
+      preferences: {
+        sharing: "private",
+      },
       startDate: null,
       endDate: null,
-      description: ""
+      participants: []
+    };
+    $scope.primaryMoment = {
+      text: "",
+      location: {
+        name: "",
+        gps: null,
+        address: ""
+      },
+      milestone: null,
+      sharing: "private"
     };
 
     $scope.SHAREABILITY_DESCRIPTIONS = {
@@ -34,11 +48,15 @@ define(function () {
       $scope.errorMessage = null;
       MemoryResource.save($scope.memory)
         .$promise
-        .then(function () {
-          redirectToMemory();
+        .then(function (response) {
+          $state.go('memories.view', response._id);
         }, function (response) {
-          // TODO: check response.status
-          $scope.errorMessage = "The server returned an unexpected response: " + response.status;
+          if (!response.status) {
+            $scope.errorMessage = "Could not connect to server";
+          } else {
+            // TODO: check response.status
+            $scope.errorMessage = "The server returned an unexpected response: " + response.status;
+          }
         })
         .then(null, function () {
           $scope.errorMessage = "An unknown error occurred";
@@ -49,5 +67,5 @@ define(function () {
     };
   }
 
-  return ["$scope", "MemoryResource", EditMemoryCtrl];
+  return ["$scope", "$state", "MemoryResource", EditMemoryCtrl];
 });

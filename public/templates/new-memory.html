@@ -5,7 +5,7 @@
       <li>
         <label class="wrapping-label has-feedback" ng-class="{'has-error': memoryForm.name.$dirty && memoryForm.name.$invalid, 'has-success': memoryForm.name.$dirty && memoryForm.name.$valid}">
           <span class="hidden">Name of your Memory</span>
-          <input type="text" placeholder="Name of your Memory" ng-model="memory.name" required class="input-lg form-control" name="name">
+          <input type="text" placeholder="Name of your Memory" ng-model="memory.about.name" required class="input-lg form-control" name="name">
           <i class="form-control-feedback" fa="check lg" ng-if="memoryForm.name.$dirty && memoryForm.name.$valid"></i>
           <i class="form-control-feedback" fa="times lg" ng-if="memoryForm.name.$dirty && memoryForm.name.$invalid"></i>
         </label>
@@ -16,11 +16,11 @@
       <li>
         <span class="hidden">Shareability</span>
         <ul class="list-inline">
-          <li><label class="radio"><input type="radio" ng-model="memory.shareability" value="private" class="hidden"> <i fa="eye-slash lg" ng-class="{'radio-selected': memory.shareability === 'private'}"></i> Private</label></li>
-          <li><label class="radio"><input type="radio" ng-model="memory.shareability" value="unlisted" class="hidden"> <i fa="shield lg" ng-class="{'radio-selected': memory.shareability === 'unlisted'}"></i> Unlisted</label></li>
-          <li><label class="radio"><input type="radio" ng-model="memory.shareability" value="public" class="hidden"> <i fa="eye lg" ng-class="{'radio-selected': memory.shareability === 'public'}"></i> Public</label></li>
+          <li><label class="radio"><input type="radio" ng-model="memory.preferences.sharing" value="private" class="hidden"> <i fa="eye-slash lg" ng-class="{'radio-selected': memory.preferences.sharing === 'private'}"></i> Private</label></li>
+          <li><label class="radio"><input type="radio" ng-model="memory.preferences.sharing" value="unlisted" class="hidden"> <i fa="shield lg" ng-class="{'radio-selected': memory.preferences.sharing === 'unlisted'}"></i> Unlisted</label></li>
+          <li><label class="radio"><input type="radio" ng-model="memory.preferences.sharing" value="public" class="hidden"> <i fa="eye lg" ng-class="{'radio-selected': memory.preferences.sharing === 'public'}"></i> Public</label></li>
         </ul>
-        <span class="help-block" ng-bind="SHAREABILITY_DESCRIPTIONS[memory.shareability]"></span>
+        <span class="help-block" ng-bind="SHAREABILITY_DESCRIPTIONS[memory.preferences.sharing]"></span>
       </li>
       <li>
         <div class="row">
@@ -47,7 +47,7 @@
       <li>
         <label class="wrapping-label">
           <span class="hidden">Description</span>
-          <textarea class="form-control" ng-model="memory.description" rows="3" optional placeholder="What is your memory about? (optional)"></textarea>
+          <textarea class="form-control" ng-model="primaryMoment.text" rows="3" optional placeholder="What is your memory about? (optional)"></textarea>
         </label>
       </li>
       <li class="text-right">

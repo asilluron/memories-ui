@@ -6,14 +6,28 @@ define('src/config',[],function () {
   };
 });
 define('src/controllers/EditMemoryCtrl',[],function () {
-  function EditMemoryCtrl($scope, MemoryResource) {
+  function EditMemoryCtrl($scope, $state, MemoryResource) {
     // TODO: handle edit mode
     $scope.memory = {
-      name: "",
-      shareability: "private",
+      about: {
+        name: ""
+      },
+      preferences: {
+        sharing: "private",
+      },
       startDate: null,
       endDate: null,
-      description: ""
+      participants: []
+    };
+    $scope.primaryMoment = {
+      text: "",
+      location: {
+        name: "",
+        gps: null,
+        address: ""
+      },
+      milestone: null,
+      sharing: "private"
     };
 
     $scope.SHAREABILITY_DESCRIPTIONS = {
@@ -41,11 +55,15 @@ define('src/controllers/EditMemoryCtrl',[],function () {
       $scope.errorMessage = null;
       MemoryResource.save($scope.memory)
         .$promise
-        .then(function () {
-          redirectToMemory();
+        .then(function (response) {
+          $state.go('memories.view', response._id);
         }, function (response) {
-          // TODO: check response.status
-          $scope.errorMessage = "The server returned an unexpected response: " + response.status;
+          if (!response.status) {
+            $scope.errorMessage = "Could not connect to server";
+          } else {
+            // TODO: check response.status
+            $scope.errorMessage = "The server returned an unexpected response: " + response.status;
+          }
         })
         .then(null, function () {
           $scope.errorMessage = "An unknown error occurred";
@@ -56,7 +74,7 @@ define('src/controllers/EditMemoryCtrl',[],function () {
     };
   }
 
-  return ["$scope", "MemoryResource", EditMemoryCtrl];
+  return ["$scope", "$state", "MemoryResource", EditMemoryCtrl];
 });
 define('src/controllers/MemoriesCtrl',[],function () {
   function MemoriesCtrl($scope, MemoryResource, UserResource) {
@@ -66,14 +84,23 @@ define('src/controllers/MemoriesCtrl',[],function () {
 
   return ["$scope", "MemoryResource", "UserResource", MemoriesCtrl];
 });
+define('src/controllers/MemoryCtrl',[],function () {
+  function MemoryCtrl($scope, memory) {
+    $scope.memory = memory;
+  }
+
+  return ["$scope", "memory", MemoryCtrl];
+});
 define('src/controllers',[
     'src/controllers/EditMemoryCtrl',
-    'src/controllers/MemoriesCtrl'
+    'src/controllers/MemoriesCtrl',
+    'src/controllers/MemoryCtrl'
   ],
-  function (EditMemoryCtrl, MemoriesCtrl) {
+  function (EditMemoryCtrl, MemoriesCtrl, MemoryCtrl) {
     return angular.module("memapp.controllers", [])
       .controller("EditMemoryCtrl", EditMemoryCtrl)
-      .controller("MemoriesCtrl", MemoriesCtrl);
+      .controller("MemoriesCtrl", MemoriesCtrl)
+      .controller("MemoryCtrl", MemoryCtrl);
   });
 /**
  * @module memapp.providers
@@ -155,7 +182,12 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
         .state('memories.view', {
           url: "/:id",
           templateUrl: "templates/memory.html",
-          controller: "MemoryCtrl"
+          controller: "MemoryCtrl",
+          resolve: {
+            memory: ['$stateParams', 'MemoryResource', function ($stateParams, MemoryResource) {
+              return MemoryResource.get({id: $stateParams.id});
+            }]
+          }
         })
         .state('memories.chat', {
           url: "/:id/chat",

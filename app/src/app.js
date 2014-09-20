@@ -33,7 +33,12 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
         .state('memories.view', {
           url: "/:id",
           templateUrl: "templates/memory.html",
-          controller: "MemoryCtrl"
+          controller: "MemoryCtrl",
+          resolve: {
+            memory: ['$stateParams', 'MemoryResource', function ($stateParams, MemoryResource) {
+              return MemoryResource.get({id: $stateParams.id});
+            }]
+          }
         })
         .state('memories.chat', {
           url: "/:id/chat",
