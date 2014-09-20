@@ -285,7 +285,6 @@ define('src/directives/memoryDetailDirective',[], function () {
     return {
     	restrict: "E",
     	replace: true,
-    	transclude: true,
     	templateUrl: "templates/directives/memoryDetailDirective.html"
       };
     }
@@ -296,7 +295,7 @@ define('src/directives/memorySummaryDirective',[], function () {
     return {
     	restrict: "E",
     	replace: true,
-    	templateUrl: "templates/directives/memoryDirective.html"
+    	templateUrl: "templates/directives/memorySummaryDirective.html"
       };
     }
   return [memorySummaryDirective];
