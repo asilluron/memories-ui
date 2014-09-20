@@ -1,6 +1,5 @@
-var gulp = require('gulp');
-var rjs = require('gulp-requirejs');
- 
+require('./gulp');
+
 gulp.task('default', function () {
  
 });
