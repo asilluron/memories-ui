@@ -32,6 +32,25 @@ server.route({
     }
 });
 
+server.route({
+    method: 'GET',
+    path: '/app',
+    handler: function(request, reply) {
+        reply.view('app');
+    }
+});
+
+//Serve public files
+server.route({
+    method: 'GET',
+    path: '/{filename*}',
+    handler: {
+        file: function(request) {
+            return request.params.filename;
+        }
+    }
+});
+
 server.start(function() {
     console.log("Hapi server started @ " + server.info.uri);
 });
