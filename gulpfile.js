@@ -11,11 +11,11 @@ var config = {
 };
 
 var gulp = require('gulp'),
-  gulpif = require('gulp-if'),
   rename = require('gulp-rename'),
-  csso = require('gulp-csso'),
   autoprefixer = require('gulp-autoprefixer'),
-  sass = require('gulp-ruby-sass'),
+  sass = require('gulp-sass'),
+  jshint = require('gulp-jshint'),
+  stylish = require('jshint-stylish'),
   livereload = require('gulp-livereload'),
   livereloadServer = livereload(35729);
 
@@ -27,7 +27,6 @@ module.exports = gulp.task('watch', function () {
   gulp.watch(config.paths.src.scripts, { maxListeners: 999999 }, ['lint', 'rjs']);
   gulp.watch(config.paths.src.styles, { maxListeners: 999999 }, ['styles']);
 });
-
 
 
 function handleError(err) {
@@ -42,6 +41,15 @@ module.exports = gulp.task('styles', function () {
     .pipe(rename('app.css'))
     .pipe(gulp.dest('public'));
 });
+
+
+
+module.exports = gulp.task('lint', function () {
+  return gulp.src(config.paths.src.scripts)
+    .pipe(jshint())
+    .pipe(jshint.reporter(stylish));
+});
+
 
 gulp.task('default', function () {
  
