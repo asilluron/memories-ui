@@ -52,6 +52,13 @@
     "angular": false,
     "jQuery": false,
     "require": false,
-    "define": false
+    "define": false,
+    "describe": false,
+    "beforeEach": false,
+    "sinon": false,
+    "it": false,
+    "expect": false,
+    "module": false,
+    "inject": false
   }
 }
