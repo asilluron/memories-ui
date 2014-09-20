@@ -2,7 +2,7 @@
 define('src/config',[],function () {
   
   return {
-    API_URL: "http://memories-api.herokuapp.com/",
+    API_URL: "http://localhost:8700",
   };
 });
 define('src/controllers/MemoriesCtrl',[],function() {

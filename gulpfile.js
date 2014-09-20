@@ -6,7 +6,8 @@ var config = {
     src: {
       scripts: ["app/src/**/*.js", "!app/src/vendor/**/*.js"],
       styles: "app/src/css/**/*.scss",
-      livereload: "public/**/*"
+      livereload: "public/**/*",
+      html: "app/src/templates/**/*.html"
     }
   }
 };
@@ -55,7 +56,7 @@ gulp.task('styles', function () {
 
 
 gulp.task('html', function () {
-  return gulp.src("./app/src/templates/**/*.html")
+  return gulp.src(config.paths.src.html)
     .pipe(gulp.dest('./public/templates'));
 });
 
@@ -66,7 +67,7 @@ module.exports = gulp.task('lint', function () {
 });
 
 
-gulp.task('default', ["lint", "rjs", "styles"], function () {
+gulp.task('default', ["lint", "rjs", "styles", "html"], function () {
   gulp.run("watch");
 });
 
