@@ -6,9 +6,9 @@ define('src/config',[],function () {
   };
 });
 define('src/controllers/EditMemoryCtrl',[],function () {
-  function EditMemoryCtrl($scope, $state, MemoryResource) {
-    // TODO: handle edit mode
-    $scope.memory = {
+  function EditMemoryCtrl($scope, $state, handleLoading, memory, MemoryResource) {
+    var isNew = $scope.isNew = !memory;
+    $scope.memory = handleLoading(memory || {
       about: {
         name: ""
       },
@@ -18,7 +18,11 @@ define('src/controllers/EditMemoryCtrl',[],function () {
       startDate: null,
       endDate: null,
       participants: []
-    };
+    }, function (value) {
+      $scope.loading = value;
+    }, function (error) {
+      $scope.loadError = error;
+    });
     $scope.primaryMoment = {
       text: "",
       location: {
@@ -48,12 +52,12 @@ define('src/controllers/EditMemoryCtrl',[],function () {
       $scope.datePickersOpen[name] = true;
     };
 
-    $scope.creating = false;
+    $scope.saving = false;
     $scope.errorMessage = null;
-    $scope.create = function () {
-      $scope.creating = true;
+    $scope.save = function () {
+      $scope.saving = true;
       $scope.errorMessage = null;
-      MemoryResource.save($scope.memory)
+      (isNew ? MemoryResource.save($scope.memory) : $scope.memory.save())
         .$promise
         .then(function (response) {
           $state.go('memories.view', {id: response._id});
@@ -69,12 +73,12 @@ define('src/controllers/EditMemoryCtrl',[],function () {
           $scope.errorMessage = "An unknown error occurred";
         })
         .finally(function () {
-          $scope.creating = false;
+          $scope.saving = false;
         });
     };
   }
 
-  return ["$scope", "$state", "MemoryResource", EditMemoryCtrl];
+  return ["$scope", "$state", "handleLoading", "memory", "MemoryResource", EditMemoryCtrl];
 });
 define('src/controllers/MemoriesCtrl',[],function () {
   function MemoriesCtrl($scope, handleLoading, MemoryResource, UserResource) {
@@ -212,6 +216,16 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
       });
       $urlRouterProvider.otherwise("/");
 
+      var resolveMemoryByStateParam = function (paramName) {
+return ['$stateParams', 'MemoryResource',
+              function ($stateParams, MemoryResource) {
+                return MemoryResource.get({
+                  id: $stateParams[paramName]
+                });
+              }
+            ]
+      };
+
       $stateProvider
         .state('memories', {
           url: "/memories",
@@ -220,21 +234,20 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
         })
         .state('memories.add', {
           url: "/new",
-          templateUrl: "templates/new-memory.html",
-          controller: "EditMemoryCtrl"
+          templateUrl: "templates/edit-memory.html",
+          controller: "EditMemoryCtrl",
+          resolve: {
+            memory: [function () {
+              return null;
+            }]
+          }
         })
         .state('memories.view', {
           url: "/:id",
           templateUrl: "templates/memory.html",
           controller: "MemoryCtrl",
           resolve: {
-            memory: ['$stateParams', 'MemoryResource',
-              function ($stateParams, MemoryResource) {
-                return MemoryResource.get({
-                  id: $stateParams.id
-                });
-              }
-            ]
+            memory: resolveMemoryByStateParam('id')
           }
         })
         .state('memories.chat', {
@@ -243,9 +256,12 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
           controller: "ChatCtrl"
         })
         .state('memories.edit', {
-          url: "/:id/edit/",
+          url: "/:id/edit",
           templateUrl: "templates/edit-memory.html",
-          controller: "EditMemoryCtrl"
+          controller: "EditMemoryCtrl",
+          resolve: {
+            memory: resolveMemoryByStateParam('id')
+          }
         })
         .state('memories.moment', {
           url: ":id/facet/:momentId",

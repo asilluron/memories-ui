@@ -1,7 +1,7 @@
 define(function () {
-  function EditMemoryCtrl($scope, $state, MemoryResource) {
-    // TODO: handle edit mode
-    $scope.memory = {
+  function EditMemoryCtrl($scope, $state, handleLoading, memory, MemoryResource) {
+    var isNew = $scope.isNew = !memory;
+    $scope.memory = handleLoading(memory || {
       about: {
         name: ""
       },
@@ -11,7 +11,11 @@ define(function () {
       startDate: null,
       endDate: null,
       participants: []
-    };
+    }, function (value) {
+      $scope.loading = value;
+    }, function (error) {
+      $scope.loadError = error;
+    });
     $scope.primaryMoment = {
       text: "",
       location: {
@@ -41,12 +45,12 @@ define(function () {
       $scope.datePickersOpen[name] = true;
     };
 
-    $scope.creating = false;
+    $scope.saving = false;
     $scope.errorMessage = null;
-    $scope.create = function () {
-      $scope.creating = true;
+    $scope.save = function () {
+      $scope.saving = true;
       $scope.errorMessage = null;
-      MemoryResource.save($scope.memory)
+      (isNew ? MemoryResource.save($scope.memory) : $scope.memory.save())
         .$promise
         .then(function (response) {
           $state.go('memories.view', {id: response._id});
@@ -62,10 +66,10 @@ define(function () {
           $scope.errorMessage = "An unknown error occurred";
         })
         .finally(function () {
-          $scope.creating = false;
+          $scope.saving = false;
         });
     };
   }
 
-  return ["$scope", "$state", "MemoryResource", EditMemoryCtrl];
+  return ["$scope", "$state", "handleLoading", "memory", "MemoryResource", EditMemoryCtrl];
 });

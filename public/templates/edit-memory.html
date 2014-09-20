@@ -1,7 +1,13 @@
 <form class="form-horizontal well" role="form" name="memoryForm">
   <fieldset>
-    <legend>New Memory</legend>
-    <ol class="list-unstyled">
+    <legend>{[{ isNew ? 'New Memory' : 'Edit Memory' }]}</legend>
+    <div ng-show="loading">
+      <i fa="spinner spin"></i> Loading memory...
+    </div>
+    <div ng-show="!loading && loadError">
+      Error loading memory
+    </div>
+    <ol class="list-unstyled" ng-show="!loading && !loadError">
       <li>
         <label class="wrapping-label has-feedback" ng-class="{'has-error': memoryForm.name.$dirty && memoryForm.name.$invalid, 'has-success': memoryForm.name.$dirty && memoryForm.name.$valid}">
           <span class="hidden">Name of your Memory</span>
@@ -52,9 +58,9 @@
       </li>
       <li class="text-right">
         <span class="text-danger" ng-if="errorMessage" ng-bind="'Error: ' + errorMessage"></span>
-        <button type="submit" class="btn btn-primary btn-lg" ng-click="create()" ng-disabled="memoryForm.$invalid || creating">
-          <span ng-hide="creating">Create</span>
-          <span ng-show="creating"><i fa="spinner spin"></i> Creating</span>
+        <button type="submit" class="btn btn-primary btn-lg" ng-click="save()" ng-disabled="memoryForm.$invalid || saving">
+          <span ng-hide="saving">{[{ isNew ? 'Create' : 'Update' }]}</span>
+          <span ng-show="saving"><i fa="spinner spin"></i> {[{ isNew ? 'Creating' : 'Updating' }]}</span>
         </button>
       </li>
     </ol>

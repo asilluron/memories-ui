@@ -34,6 +34,16 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
       });
       $urlRouterProvider.otherwise("/");
 
+      var resolveMemoryByStateParam = function (paramName) {
+return ['$stateParams', 'MemoryResource',
+              function ($stateParams, MemoryResource) {
+                return MemoryResource.get({
+                  id: $stateParams[paramName]
+                });
+              }
+            ]
+      };
+
       $stateProvider
         .state('memories', {
           url: "/memories",
@@ -42,21 +52,20 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
         })
         .state('memories.add', {
           url: "/new",
-          templateUrl: "templates/new-memory.html",
-          controller: "EditMemoryCtrl"
+          templateUrl: "templates/edit-memory.html",
+          controller: "EditMemoryCtrl",
+          resolve: {
+            memory: [function () {
+              return null;
+            }]
+          }
         })
         .state('memories.view', {
           url: "/:id",
           templateUrl: "templates/memory.html",
           controller: "MemoryCtrl",
           resolve: {
-            memory: ['$stateParams', 'MemoryResource',
-              function ($stateParams, MemoryResource) {
-                return MemoryResource.get({
-                  id: $stateParams.id
-                });
-              }
-            ]
+            memory: resolveMemoryByStateParam('id')
           }
         })
         .state('memories.chat', {
@@ -65,9 +74,12 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
           controller: "ChatCtrl"
         })
         .state('memories.edit', {
-          url: "/:id/edit/",
+          url: "/:id/edit",
           templateUrl: "templates/edit-memory.html",
-          controller: "EditMemoryCtrl"
+          controller: "EditMemoryCtrl",
+          resolve: {
+            memory: resolveMemoryByStateParam('id')
+          }
         })
         .state('memories.moment', {
           url: ":id/facet/:momentId",
