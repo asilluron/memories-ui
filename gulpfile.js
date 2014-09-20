@@ -4,13 +4,15 @@
 var config = {
 	paths: {
 		src: {
-			scripts: "src/app/**/*.js",
-
+			scripts: "app/src/app/**/*.js",
+			styles: "app/src/css/**/*.scss",
+			livereload: "public/**/*"
 		}
 	}
 };
 
 var gulp = require('gulp'),
+  rjs = require("gulp-requirejs"),
   rename = require('gulp-rename'),
   autoprefixer = require('gulp-autoprefixer'),
   sass = require('gulp-sass'),
@@ -25,6 +27,7 @@ module.exports = gulp.task('watch', function () {
   });
   // TODO: Find a proper way to ignore "possible EventEmitter memory leak detected", handled by maxListeners ATM
   gulp.watch(config.paths.src.scripts, { maxListeners: 999999 }, ['lint', 'rjs']);
+  gulp.watch(config.paths.src.html, { maxListeners: 999999 }, ['html']);
   gulp.watch(config.paths.src.styles, { maxListeners: 999999 }, ['styles']);
 });
 
@@ -34,15 +37,19 @@ function handleError(err) {
   this.emit('end');
 }
 
-module.exports = gulp.task('styles', function () {
-  return gulp.src("src/css/**.scss")
+gulp.task('styles', function () {
+  return gulp.src("./app/src/css/**/*.scss")
     .pipe(sass().on('error', handleError))
     .pipe(autoprefixer('last 1 version'))
     .pipe(rename('app.css'))
-    .pipe(gulp.dest('public'));
+    .pipe(gulp.dest('./public/css'));
 });
 
 
+gulp.task('html', function(){
+	return gulp.src("./app/src/templates/**/*.html")
+		.pipe(gulp.dest('./public/templates'));
+});
 
 module.exports = gulp.task('lint', function () {
   return gulp.src(config.paths.src.scripts)
@@ -51,8 +58,8 @@ module.exports = gulp.task('lint', function () {
 });
 
 
-gulp.task('default', function () {
- 
+gulp.task('default', ["lint", "rjs", "styles"],function () {
+ 	gulp.run("watch");
 });
  
 gulp.task('rjs', function() {
