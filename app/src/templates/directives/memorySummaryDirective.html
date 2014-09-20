@@ -1,0 +1,12 @@
+<div ui-sref="memories.view({id: memory._id})" class="memory-summary" ng-style='{"background-image": memory.about.primaryMoment.imageUrl}'>
+	{{memory.name}}
+	<ul class="participant-list">
+		<li ng-repeat="participant in memory.participants">
+			{{participant.user.preferredName}}
+		</li>
+	</ul>
+	<div class="date-range" ng-if="memory.startDate || memory.endDate">
+		<span ng-if="memory.startDate">{{ memory.startDate | date }}</span>
+		<span ng-if="memory.endDate">{{ memory.endDate | date }}</span>
+	</div>
+</div>

@@ -1,4 +1,10 @@
 @import '../../vendor/bootstrap-sass-official/assets/stylesheets/_bootstrap';
-@import 'bootswatch/_bootswatch';
 @import 'bootswatch/_variables';
+@import 'bootswatch/_slate-theme';
 @import '../../vendor/font-awesome/scss/font-awesome';
+
+@import '_modules/_event';
+@import '_modules/_timeline';
+@import '_modules/_add-memory';
+@import '_modules/_logo';
+@import '_modules/_nav';

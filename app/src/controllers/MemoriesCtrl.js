@@ -23,7 +23,6 @@ define(function () {
         });
       });
     });
-    $scope.user = UserResource.get();
   }
   return ["$scope", "handleLoading", "MemoryResource", "socketFactoryFactory", "UserResource", MemoriesCtrl];
 });

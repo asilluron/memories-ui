@@ -21,6 +21,6 @@ define(function () {
 
 
   }
-
+  
   return ["$scope", "$q","MilestoneResource", MilestoneCtrl];
 });
