@@ -5,16 +5,14 @@ define('src/config',[],function () {
     API_URL: "http://localhost:8700",
   };
 });
-define('src/controllers/MemoriesCtrl',[],function() {
+define('src/controllers/MemoriesCtrl',[],function () {
+  function MemoriesCtrl($scope, MemoryResource, UserResource) {
+    $scope.memories = MemoryResource.query();
+    $scope.user = UserResource.get();
+  }
 
-    function MemoriesCtrl($scope, UserResource) {
-        $scope.user = UserResource.get();
-
-    }
-
-    return ["$scope", "UserResource", MemoriesCtrl];
+  return ["$scope", "MemoryResource", "UserResource", MemoriesCtrl];
 });
-
 define('src/controllers',['src/controllers/MemoriesCtrl'],
     function(MemoriesCtrl) {
     return angular.module("memapp.controllers", [])
@@ -34,8 +32,19 @@ define('src/providers/UserResource',[], function() {
     return ['$resource', 'API_URL', UserResource];
 });
 
-define('src/providers',['src/providers/UserResource'], function (UserResource) {
+define('src/providers/MemoryResource',[], function () {
+  function MemoryResource($resource, API_URL) {
+    return $resource(API_URL + "/memories/:id", {});
+  }
+
+  return ['$resource', 'API_URL', MemoryResource];
+});
+define('src/providers',[
+  'src/providers/UserResource',
+  'src/providers/MemoryResource'
+], function (UserResource, MemoryResource) {
   return angular.module("memapp.providers", ["ngResource"])
+    .factory("MemoryResource", MemoryResource)
     .factory("UserResource", UserResource);
 });
 define('src/directives',[], function() {

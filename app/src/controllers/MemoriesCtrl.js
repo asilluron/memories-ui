@@ -1,9 +1,8 @@
-define(function() {
+define(function () {
+  function MemoriesCtrl($scope, MemoryResource, UserResource) {
+    $scope.memories = MemoryResource.query();
+    $scope.user = UserResource.get();
+  }
 
-    function MemoriesCtrl($scope, UserResource) {
-        $scope.user = UserResource.get();
-
-    }
-
-    return ["$scope", "UserResource", MemoriesCtrl];
+  return ["$scope", "MemoryResource", "UserResource", MemoriesCtrl];
 });
