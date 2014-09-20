@@ -77,30 +77,27 @@ define('src/controllers/EditMemoryCtrl',[],function () {
   return ["$scope", "$state", "MemoryResource", EditMemoryCtrl];
 });
 define('src/controllers/MemoriesCtrl',[],function () {
-  function MemoriesCtrl($scope, MemoryResource, UserResource) {
-    $scope.memories = MemoryResource.query();
+  function MemoriesCtrl($scope, handleLoading, MemoryResource, UserResource) {
+    $scope.memories = handleLoading(MemoryResource.query(), function (value) {
+      $scope.loading = value;
+    }, function (error) {
+      $scope.loadError = error;
+    });
     $scope.user = UserResource.get();
   }
 
-  return ["$scope", "MemoryResource", "UserResource", MemoriesCtrl];
+  return ["$scope", "handleLoading", "MemoryResource", "UserResource", MemoriesCtrl];
 });
 define('src/controllers/MemoryCtrl',[],function () {
-  function MemoryCtrl($scope, memory) {
-    $scope.memory = memory;
-    $scope.loadError = null;
-    if (memory.$promise) {
-      $scope.loading = true;
-      memory.$promise.then(null, function (error) {
-        $scope.loadError = error;
-      }).finally(function () {
-        $scope.loading = false;
-      });
-    } else {
-      $scope.loading = false;
-    }
+  function MemoryCtrl($scope, handleLoading, memory) {
+    $scope.memory = handleLoading(memory, function (value) {
+      $scope.loading = value;
+    }, function (error) {
+      $scope.loadError = error;
+    });
   }
 
-  return ["$scope", "memory", MemoryCtrl];
+  return ["$scope", "handleLoading", "memory", MemoryCtrl];
 });
 define('src/controllers',[
     'src/controllers/EditMemoryCtrl',
@@ -133,13 +130,34 @@ define('src/providers/MemoryResource',[], function () {
 
   return ['$resource', 'API_URL', MemoryResource];
 });
+define('src/providers/handleLoading',[], function () {
+  function handleLoading() {
+    return function (model, setLoading, setError) {
+      setError(null);
+      var promise = model && model.$promise;
+      if (promise != null) {
+        setLoading(true);
+        promise.then(null, setError).finally(function () {
+          setLoading(false);
+        });
+      } else {
+        setLoading(false);
+      }
+      return model;
+    }
+  }
+
+  return [handleLoading];
+});
 define('src/providers',[
   'src/providers/UserResource',
-  'src/providers/MemoryResource'
-], function (UserResource, MemoryResource) {
+  'src/providers/MemoryResource',
+  'src/providers/handleLoading'
+], function (UserResource, MemoryResource, handleLoading) {
   return angular.module("memapp.providers", ["ngResource"])
     .factory("MemoryResource", MemoryResource)
-    .factory("UserResource", UserResource);
+    .factory("UserResource", UserResource)
+    .factory("handleLoading", handleLoading);
 });
 define('src/directives',[], function () {
   return angular.module("memapp.directives", ["memapp.providers"])
@@ -177,6 +195,21 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
       $interpolateProvider.startSymbol('{[{')
         .endSymbol('}]}');
 
+      var removeTrailingSlash = function (path, query) {
+        if (path !== '/' && path.charAt(path.length - 1) === '/') {
+          return path.substring(0, path.length - 1) + query;
+        }
+      };
+      $urlRouterProvider.rule(function ($injector, $location) {
+        var url = $location.url();
+
+        var queryIndex = url.indexOf('?');
+        if (queryIndex === -1) {
+          return removeTrailingSlash(url, "");
+        } else {
+          return removeTrailingSlash(url.substring(0, queryIndex), url.substring(queryIndex));
+        }
+      });
       $urlRouterProvider.otherwise("/");
 
       $stateProvider
@@ -195,9 +228,13 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
           templateUrl: "templates/memory.html",
           controller: "MemoryCtrl",
           resolve: {
-            memory: ['$stateParams', 'MemoryResource', function ($stateParams, MemoryResource) {
-              return MemoryResource.get({id: $stateParams.id});
-            }]
+            memory: ['$stateParams', 'MemoryResource',
+              function ($stateParams, MemoryResource) {
+                return MemoryResource.get({
+                  id: $stateParams.id
+                });
+              }
+            ]
           }
         })
         .state('memories.chat', {

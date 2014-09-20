@@ -1,18 +1,11 @@
 define(function () {
-  function MemoryCtrl($scope, memory) {
-    $scope.memory = memory;
-    $scope.loadError = null;
-    if (memory.$promise) {
-      $scope.loading = true;
-      memory.$promise.then(null, function (error) {
-        $scope.loadError = error;
-      }).finally(function () {
-        $scope.loading = false;
-      });
-    } else {
-      $scope.loading = false;
-    }
+  function MemoryCtrl($scope, handleLoading, memory) {
+    $scope.memory = handleLoading(memory, function (value) {
+      $scope.loading = value;
+    }, function (error) {
+      $scope.loadError = error;
+    });
   }
 
-  return ["$scope", "memory", MemoryCtrl];
+  return ["$scope", "handleLoading", "memory", MemoryCtrl];
 });
