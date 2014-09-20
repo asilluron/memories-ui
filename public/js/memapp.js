@@ -6,11 +6,23 @@ define('src/config',[],function () {
   };
 });
 define('src/controllers/EditMemoryCtrl',[],function () {
+  var makeEmptyMoment = function () {
+    return {
+      text: "",
+      location: {
+        name: "",
+        gps: null,
+        address: ""
+      },
+      sharing: "private"
+    };
+  }
   function EditMemoryCtrl($scope, $state, handleLoading, memory, MemoryResource) {
     var isNew = $scope.isNew = !memory;
     $scope.memory = handleLoading(memory || {
       about: {
-        name: ""
+        name: "",
+        primaryMoment: null
       },
       preferences: {
         sharing: "private",
@@ -23,16 +35,10 @@ define('src/controllers/EditMemoryCtrl',[],function () {
     }, function (error) {
       $scope.loadError = error;
     });
-    $scope.primaryMoment = {
-      text: "",
-      location: {
-        name: "",
-        gps: null,
-        address: ""
-      },
-      milestone: null,
-      sharing: "private"
-    };
+    if (!$scope.memory.about.primaryMoment) {
+      $scope.memory.about.primaryMoment = makeEmptyMoment();
+    }
+    $scope.primaryMoment = $scope.memory.about.primaryMoment;
 
     $scope.SHAREABILITY_DESCRIPTIONS = {
       "private": "Your memory cannot be seen by anyone but participants of the memory.",
@@ -57,8 +63,7 @@ define('src/controllers/EditMemoryCtrl',[],function () {
     $scope.save = function () {
       $scope.saving = true;
       $scope.errorMessage = null;
-      (isNew ? MemoryResource.save($scope.memory) : $scope.memory.save())
-        .$promise
+      (isNew ? MemoryResource.save($scope.memory).$promise : $scope.memory.$update())
         .then(function (response) {
           $state.go('memories.view', {id: response._id});
         }, function (response) {
@@ -147,7 +152,29 @@ define('src/providers/UserResource',[], function() {
 
 define('src/providers/MemoryResource',[], function () {
   function MemoryResource($resource, API_URL) {
-    return $resource(API_URL + "/memories/:id", {});
+    return $resource(API_URL + "/memories/:id", {id:'@_id'}, {
+      update: {
+        method: 'PATCH',
+        transformRequest: function (memory) {
+          return angular.toJson({
+            about: {
+              name: memory.about.name
+            },
+            startDate: memory.startDate,
+            endDate: memory.endDate,
+            preferences: {
+              sharing: memory.preferences.sharing
+            },
+            participants: memory.participants.map(function (participant) {
+              return {
+                role: participant.role,
+                user: participant.user._id
+              };
+            })
+          });
+        }
+      }
+    });
   }
 
   return ['$resource', 'API_URL', MemoryResource];

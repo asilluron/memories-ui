@@ -1,9 +1,21 @@
 define(function () {
+  var makeEmptyMoment = function () {
+    return {
+      text: "",
+      location: {
+        name: "",
+        gps: null,
+        address: ""
+      },
+      sharing: "private"
+    };
+  }
   function EditMemoryCtrl($scope, $state, handleLoading, memory, MemoryResource) {
     var isNew = $scope.isNew = !memory;
     $scope.memory = handleLoading(memory || {
       about: {
-        name: ""
+        name: "",
+        primaryMoment: null
       },
       preferences: {
         sharing: "private",
@@ -16,16 +28,10 @@ define(function () {
     }, function (error) {
       $scope.loadError = error;
     });
-    $scope.primaryMoment = {
-      text: "",
-      location: {
-        name: "",
-        gps: null,
-        address: ""
-      },
-      milestone: null,
-      sharing: "private"
-    };
+    if (!$scope.memory.about.primaryMoment) {
+      $scope.memory.about.primaryMoment = makeEmptyMoment();
+    }
+    $scope.primaryMoment = $scope.memory.about.primaryMoment;
 
     $scope.SHAREABILITY_DESCRIPTIONS = {
       "private": "Your memory cannot be seen by anyone but participants of the memory.",
@@ -50,8 +56,7 @@ define(function () {
     $scope.save = function () {
       $scope.saving = true;
       $scope.errorMessage = null;
-      (isNew ? MemoryResource.save($scope.memory) : $scope.memory.save())
-        .$promise
+      (isNew ? MemoryResource.save($scope.memory).$promise : $scope.memory.$update())
         .then(function (response) {
           $state.go('memories.view', {id: response._id});
         }, function (response) {
