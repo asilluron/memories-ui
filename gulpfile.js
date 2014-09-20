@@ -2,14 +2,17 @@
 
 
 var config = {
-  paths: {
-    src: {
-      scripts: ["app/src/**/*.js", "!app/src/vendor/**/*.js"],
-      styles: "app/src/css/**/*.scss",
-      livereload: "public/**/*",
-      html: "app/src/templates/**/*.html"
-    }
-  }
+	paths: {
+		src: {
+			scripts: "app/src/app/**/*.js",
+			styles: "app/src/css/**/*.scss",
+			livereload: ["public/**/*"],
+			vendor: "app/vendor/**"
+		}, 
+		dest: {
+			vendor: "public/vendor"
+		}
+	}
 };
 
 var gulp = require('gulp'),
@@ -20,6 +23,7 @@ var gulp = require('gulp'),
   jshint = require('gulp-jshint'),
   stylish = require('jshint-stylish'),
   livereload = require('gulp-livereload'),
+  newer = require('gulp-newer'),
   livereloadServer = livereload(35729);
 
 module.exports = gulp.task('watch', function () {
@@ -42,7 +46,6 @@ module.exports = gulp.task('watch', function () {
 
 function handleError(err) {
   console.log(err.toString());
-  this.emit('end');
 }
 
 gulp.task('styles', function () {
@@ -67,18 +70,29 @@ module.exports = gulp.task('lint', function () {
 });
 
 
-gulp.task('default', ["lint", "rjs", "styles", "html"], function () {
-  gulp.run("watch");
+gulp.task('default', ["lint", "rjs", "styles"],function () {
+	gulp.run("vendor");
+ 	gulp.run("watch");
 });
 
-gulp.task('rjs', function () {
-  rjs({
-    baseUrl: 'app',
-    out: 'memapp.js',
-    "name": "src/app",
-    "deps": [],
-    "paths": {},
-    "shim": {}
-  })
-    .pipe(gulp.dest('./public/js')); // pipe it to the output DIR
+gulp.task('vendor', function(){
+	return gulp.src(config.paths.src.vendor)
+		.pipe(newer(config.paths.dest.vendor))
+		.pipe(gulp.dest(config.paths.dest.vendor));
 });
+ 
+gulp.task('rjs', function() {
+    rjs({
+        baseUrl: 'app',
+        out: 'memapp.js',
+        "name": "src/app",
+        "deps": [],
+        "paths": {
+        },
+        "shim": {
+        }
+    })
+        .pipe(gulp.dest('./public/js')); // pipe it to the output DIR
+});
+
+
