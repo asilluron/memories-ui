@@ -26,20 +26,23 @@
   };
 
   var require_config = {
-    "baseUrl": "/base/src/app",
-    "deps": ["angular", "angular-mocks", "sinon", "angular-resource", "jasmine-sinon"],
+    "baseUrl": "/base/app",
+    "deps": ["angular", "angular-mocks", "sinon", "angular-resource", "angular-cookies", "angular-ui-router", "angular-ui-utils", "jasmine-sinon"],
     "paths": {
       "angular": "vendor/angular/angular",
-      "angular-ui-router": "vendor/angular-ui-router/angular-ui-router",
+      "angular-ui-utils": "vendor/angular-ui-utils/ui-utils",
+      "angular-ui-router": "vendor/angular-ui-router/release/angular-ui-router",
       "angular-resource": "vendor/angular-resource/angular-resource",
       "angular-mocks": "vendor/angular-mocks/angular-mocks",
+      "angular-cookies": "vendor/angular-cookies/angular-cookies",
       "sinon": "vendor/sinon/lib/sinon",
       "jasmine-sinon": "vendor/jasmine-sinon/lib/jasmine-sinon"
     },
     "shim": {
       "angular-mocks": ["angular"],
       "angular-resource": ["angular"],
-      "angular-ui-router": ["angular"]
+      "angular-ui-router": ["angular"],
+      "angular-cookies": ["angular"]
     }
   };
 

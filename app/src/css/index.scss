@@ -1,34 +1,4 @@
-@import 'bootswatch/_variables';
 @import '../../vendor/bootstrap-sass-official/assets/stylesheets/_bootstrap';
-@import 'bootswatch/bootswatch';
+@import 'bootswatch/_bootswatch';
+@import 'bootswatch/_variables';
 @import '../../vendor/font-awesome/scss/font-awesome';
-
-.radio-selected {
-  color: $brand-info;
-}
-
-label {
-  font-weight: normal;
-}
-
-.wrapping-label {
-  display: block;
-}
-
-// TODO: probably remove this
-.help-block {
-  color: white;
-}
-
-// this makes the labels white instead of gray, which makes sense for radio or checkbox
-.checkbox, .radio {
-  color: white;
-}
-
-.text-lg {
-  font-size: $font-size-large;
-}
-
-.text-sm {
-  font-size: $font-size-small;
-}

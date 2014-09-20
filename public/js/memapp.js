@@ -6,32 +6,14 @@ define('src/config',[],function () {
   };
 });
 define('src/controllers/EditMemoryCtrl',[],function () {
-  function EditMemoryCtrl($scope, $state, handleLoading, memory, MemoryResource) {
-    var isNew = $scope.isNew = !memory;
-    $scope.memory = handleLoading(memory || {
-      about: {
-        name: ""
-      },
-      preferences: {
-        sharing: "private",
-      },
+  function EditMemoryCtrl($scope, MemoryResource) {
+    // TODO: handle edit mode
+    $scope.memory = {
+      name: "",
+      shareability: "private",
       startDate: null,
       endDate: null,
-      participants: []
-    }, function (value) {
-      $scope.loading = value;
-    }, function (error) {
-      $scope.loadError = error;
-    });
-    $scope.primaryMoment = {
-      text: "",
-      location: {
-        name: "",
-        gps: null,
-        address: ""
-      },
-      milestone: null,
-      sharing: "private"
+      description: ""
     };
 
     $scope.SHAREABILITY_DESCRIPTIONS = {
@@ -52,67 +34,65 @@ define('src/controllers/EditMemoryCtrl',[],function () {
       $scope.datePickersOpen[name] = true;
     };
 
-    $scope.saving = false;
+    $scope.creating = false;
     $scope.errorMessage = null;
-    $scope.save = function () {
-      $scope.saving = true;
+    $scope.create = function () {
+      $scope.creating = true;
       $scope.errorMessage = null;
-      (isNew ? MemoryResource.save($scope.memory) : $scope.memory.save())
+      MemoryResource.save($scope.memory)
         .$promise
-        .then(function (response) {
-          $state.go('memories.view', {id: response._id});
+        .then(function () {
+          redirectToMemory();
         }, function (response) {
-          if (!response.status) {
-            $scope.errorMessage = "Could not connect to server";
-          } else {
-            // TODO: check response.status
-            $scope.errorMessage = "The server returned an unexpected response: " + response.status;
-          }
+          // TODO: check response.status
+          $scope.errorMessage = "The server returned an unexpected response: " + response.status;
         })
         .then(null, function () {
           $scope.errorMessage = "An unknown error occurred";
         })
         .finally(function () {
-          $scope.saving = false;
+          $scope.creating = false;
         });
     };
   }
 
-  return ["$scope", "$state", "handleLoading", "memory", "MemoryResource", EditMemoryCtrl];
+  return ["$scope", "MemoryResource", EditMemoryCtrl];
 });
 define('src/controllers/MemoriesCtrl',[],function () {
-  function MemoriesCtrl($scope, handleLoading, MemoryResource, UserResource) {
-    $scope.memories = handleLoading(MemoryResource.query(), function (value) {
-      $scope.loading = value;
-    }, function (error) {
-      $scope.loadError = error;
+  function MemoriesCtrl($scope, $q, MemoryResource, socketFactoryFactory, UserResource) {
+  	$scope.memories = [];
+  	MemoryResource.query().$promise.then(function(result){
+    	result.forEach(function(memory){
+    		memory.socket = socketFactoryFactory(memory._id);
+    		$scope.memories.push(memory);
+    		memory.socket.join('chat');
+    		memory.socket.on("milestone", function(msg){
+    			console.log("new milestone action!", msg);
+	        });
+	        memory.socket.on("user", function(msg){
+	        	console.log("new user action completed!");
+	        });
+	        memory.socket.on("moment", function(msg){
+	        	console.log("new moment action!");
+	        });
+	        memory.socket.on("edit", function(msg){
+	        	console.log("new edit to this memory");
+	        });
+    	});
     });
     $scope.user = UserResource.get();
   }
 
-  return ["$scope", "handleLoading", "MemoryResource", "UserResource", MemoriesCtrl];
-});
-define('src/controllers/MemoryCtrl',[],function () {
-  function MemoryCtrl($scope, handleLoading, memory) {
-    $scope.memory = handleLoading(memory, function (value) {
-      $scope.loading = value;
-    }, function (error) {
-      $scope.loadError = error;
-    });
-  }
-
-  return ["$scope", "handleLoading", "memory", MemoryCtrl];
+  return ["$scope", "$q", "MemoryResource", "socketFactoryFactory", "UserResource", MemoriesCtrl];
 });
 define('src/controllers',[
     'src/controllers/EditMemoryCtrl',
-    'src/controllers/MemoriesCtrl',
-    'src/controllers/MemoryCtrl'
+    'src/controllers/MemoriesCtrl'
   ],
-  function (EditMemoryCtrl, MemoriesCtrl, MemoryCtrl) {
+  function (EditMemoryCtrl, MemoriesCtrl) {
     return angular.module("memapp.controllers", [])
       .controller("EditMemoryCtrl", EditMemoryCtrl)
-      .controller("MemoriesCtrl", MemoriesCtrl)
-      .controller("MemoryCtrl", MemoryCtrl);
+      .controller("MemoriesCtrl", MemoriesCtrl);
   });
 /**
  * @module memapp.providers
@@ -134,34 +114,13 @@ define('src/providers/MemoryResource',[], function () {
 
   return ['$resource', 'API_URL', MemoryResource];
 });
-define('src/providers/handleLoading',[], function () {
-  function handleLoading() {
-    return function (model, setLoading, setError) {
-      setError(null);
-      var promise = model && model.$promise;
-      if (promise != null) {
-        setLoading(true);
-        promise.then(null, setError).finally(function () {
-          setLoading(false);
-        });
-      } else {
-        setLoading(false);
-      }
-      return model;
-    }
-  }
-
-  return [handleLoading];
-});
 define('src/providers',[
   'src/providers/UserResource',
-  'src/providers/MemoryResource',
-  'src/providers/handleLoading'
-], function (UserResource, MemoryResource, handleLoading) {
+  'src/providers/MemoryResource'
+], function (UserResource, MemoryResource) {
   return angular.module("memapp.providers", ["ngResource"])
     .factory("MemoryResource", MemoryResource)
-    .factory("UserResource", UserResource)
-    .factory("handleLoading", handleLoading);
+    .factory("UserResource", UserResource);
 });
 define('src/directives',[], function () {
   return angular.module("memapp.directives", ["memapp.providers"])
@@ -199,32 +158,7 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
       $interpolateProvider.startSymbol('{[{')
         .endSymbol('}]}');
 
-      var removeTrailingSlash = function (path, query) {
-        if (path !== '/' && path.charAt(path.length - 1) === '/') {
-          return path.substring(0, path.length - 1) + query;
-        }
-      };
-      $urlRouterProvider.rule(function ($injector, $location) {
-        var url = $location.url();
-
-        var queryIndex = url.indexOf('?');
-        if (queryIndex === -1) {
-          return removeTrailingSlash(url, "");
-        } else {
-          return removeTrailingSlash(url.substring(0, queryIndex), url.substring(queryIndex));
-        }
-      });
       $urlRouterProvider.otherwise("/");
-
-      var resolveMemoryByStateParam = function (paramName) {
-return ['$stateParams', 'MemoryResource',
-              function ($stateParams, MemoryResource) {
-                return MemoryResource.get({
-                  id: $stateParams[paramName]
-                });
-              }
-            ]
-      };
 
       $stateProvider
         .state('memories', {
@@ -234,21 +168,13 @@ return ['$stateParams', 'MemoryResource',
         })
         .state('memories.add', {
           url: "/new",
-          templateUrl: "templates/edit-memory.html",
-          controller: "EditMemoryCtrl",
-          resolve: {
-            memory: [function () {
-              return null;
-            }]
-          }
+          templateUrl: "templates/new-memory.html",
+          controller: "EditMemoryCtrl"
         })
         .state('memories.view', {
           url: "/:id",
           templateUrl: "templates/memory.html",
-          controller: "MemoryCtrl",
-          resolve: {
-            memory: resolveMemoryByStateParam('id')
-          }
+          controller: "MemoryCtrl"
         })
         .state('memories.chat', {
           url: "/:id/chat",
@@ -256,12 +182,9 @@ return ['$stateParams', 'MemoryResource',
           controller: "ChatCtrl"
         })
         .state('memories.edit', {
-          url: "/:id/edit",
+          url: "/:id/edit/",
           templateUrl: "templates/edit-memory.html",
-          controller: "EditMemoryCtrl",
-          resolve: {
-            memory: resolveMemoryByStateParam('id')
-          }
+          controller: "EditMemoryCtrl"
         })
         .state('memories.moment', {
           url: ":id/facet/:momentId",
