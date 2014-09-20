@@ -1,6 +1,6 @@
 "use strict";
 
-define()([], function(){
+define([], function(){
   function socketFactoryFactory ($rootScope){
     return function socketFactory(context){
       var socket = io.connect(context);

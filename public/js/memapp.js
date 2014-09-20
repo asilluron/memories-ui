@@ -6,14 +6,32 @@ define('src/config',[],function () {
   };
 });
 define('src/controllers/EditMemoryCtrl',[],function () {
-  function EditMemoryCtrl($scope, MemoryResource) {
-    // TODO: handle edit mode
-    $scope.memory = {
-      name: "",
-      shareability: "private",
+  function EditMemoryCtrl($scope, $state, handleLoading, memory, MemoryResource) {
+    var isNew = $scope.isNew = !memory;
+    $scope.memory = handleLoading(memory || {
+      about: {
+        name: ""
+      },
+      preferences: {
+        sharing: "private",
+      },
       startDate: null,
       endDate: null,
-      description: ""
+      participants: []
+    }, function (value) {
+      $scope.loading = value;
+    }, function (error) {
+      $scope.loadError = error;
+    });
+    $scope.primaryMoment = {
+      text: "",
+      location: {
+        name: "",
+        gps: null,
+        address: ""
+      },
+      milestone: null,
+      sharing: "private"
     };
 
     $scope.SHAREABILITY_DESCRIPTIONS = {
@@ -34,65 +52,85 @@ define('src/controllers/EditMemoryCtrl',[],function () {
       $scope.datePickersOpen[name] = true;
     };
 
-    $scope.creating = false;
+    $scope.saving = false;
     $scope.errorMessage = null;
-    $scope.create = function () {
-      $scope.creating = true;
+    $scope.save = function () {
+      $scope.saving = true;
       $scope.errorMessage = null;
-      MemoryResource.save($scope.memory)
+      (isNew ? MemoryResource.save($scope.memory) : $scope.memory.save())
         .$promise
-        .then(function () {
-          redirectToMemory();
+        .then(function (response) {
+          $state.go('memories.view', {id: response._id});
         }, function (response) {
-          // TODO: check response.status
-          $scope.errorMessage = "The server returned an unexpected response: " + response.status;
+          if (!response.status) {
+            $scope.errorMessage = "Could not connect to server";
+          } else {
+            // TODO: check response.status
+            $scope.errorMessage = "The server returned an unexpected response: " + response.status;
+          }
         })
         .then(null, function () {
           $scope.errorMessage = "An unknown error occurred";
         })
         .finally(function () {
-          $scope.creating = false;
+          $scope.saving = false;
         });
     };
   }
 
-  return ["$scope", "MemoryResource", EditMemoryCtrl];
+  return ["$scope", "$state", "handleLoading", "memory", "MemoryResource", EditMemoryCtrl];
 });
 define('src/controllers/MemoriesCtrl',[],function () {
-  function MemoriesCtrl($scope, $q, MemoryResource, socketFactoryFactory, UserResource) {
-  	$scope.memories = [];
-  	MemoryResource.query().$promise.then(function(result){
-    	result.forEach(function(memory){
-    		memory.socket = socketFactoryFactory(memory._id);
-    		$scope.memories.push(memory);
-    		memory.socket.join('chat');
-    		memory.socket.on("milestone", function(msg){
-    			console.log("new milestone action!", msg);
-	        });
-	        memory.socket.on("user", function(msg){
-	        	console.log("new user action completed!");
-	        });
-	        memory.socket.on("moment", function(msg){
-	        	console.log("new moment action!");
-	        });
-	        memory.socket.on("edit", function(msg){
-	        	console.log("new edit to this memory");
-	        });
-    	});
+  function MemoriesCtrl($scope, handleLoading, MemoryResource, socketFactoryFactory, UserResource) {
+    $scope.memories = handleLoading(MemoryResource.query(), function (value) {
+      $scope.loading = value;
+    }, function (error) {
+      $scope.loadError = error;
     });
-    $scope.user = UserResource.get();
+    $scope.memories.$promise.then(function (memories) {
+      memories.forEach(function (memory) {
+        var socket = memory.socket = socketFactoryFactory(memory._id);
+        socket.join('chat');
+        socket.on("milestone", function (msg) {
+          console.log("new milestone action!", msg);
+        });
+        socket.on("user", function (msg) {
+          console.log("new user action completed!");
+        });
+        socket.on("moment", function (msg) {
+          console.log("new moment action!");
+        });
+        socket.on("edit", function (msg) {
+          console.log("new edit to this memory");
+        });
+      });
+    });
+  }
+  return ["$scope", "handleLoading", "MemoryResource", "socketFactoryFactory", "UserResource", MemoriesCtrl];
+});
+  
+
+define('src/controllers/MemoryCtrl',[],function () {
+  function MemoryCtrl($scope, handleLoading, memory) {
+    $scope.memory = handleLoading(memory, function (value) {
+      $scope.loading = value;
+    }, function (error) {
+      $scope.loadError = error;
+    });
   }
 
-  return ["$scope", "$q", "MemoryResource", "socketFactoryFactory", "UserResource", MemoriesCtrl];
+  return ["$scope", "handleLoading", "memory", MemoryCtrl];
 });
 define('src/controllers',[
     'src/controllers/EditMemoryCtrl',
-    'src/controllers/MemoriesCtrl'
+    'src/controllers/MemoriesCtrl',
+    'src/controllers/MemoryCtrl'
   ],
-  function (EditMemoryCtrl, MemoriesCtrl) {
+  function (EditMemoryCtrl, MemoriesCtrl, MemoryCtrl) {
     return angular.module("memapp.controllers", [])
       .controller("EditMemoryCtrl", EditMemoryCtrl)
-      .controller("MemoriesCtrl", MemoriesCtrl);
+      .controller("MemoriesCtrl", MemoriesCtrl)
+      .controller("MemoryCtrl", MemoryCtrl);
   });
 /**
  * @module memapp.providers
@@ -114,15 +152,175 @@ define('src/providers/MemoryResource',[], function () {
 
   return ['$resource', 'API_URL', MemoryResource];
 });
+define('src/providers/handleLoading',[], function () {
+  function handleLoading() {
+    return function (model, setLoading, setError) {
+      setError(null);
+      var promise = model && model.$promise;
+      if (promise != null) {
+        setLoading(true);
+        promise.then(null, setError).finally(function () {
+          setLoading(false);
+        });
+      } else {
+        setLoading(false);
+      }
+      return model;
+    };
+  }
+
+  return [handleLoading];
+});
+
+
+define('src/providers/socketFactoryFactory',[], function(){
+  function socketFactoryFactory ($rootScope){
+    return function socketFactory(context){
+      var socket = io.connect(context);
+      return {
+        on: function (eventName, callback) {
+          socket.on(eventName, function () {  
+            var args = arguments;
+            $rootScope.$apply(function () {
+              callback.apply(socket, args);
+            });
+          });
+        },
+        emit: function (eventName, data, callback) {
+          socket.emit(eventName, data, function () {
+            var args = arguments;
+            $rootScope.$apply(function () {
+              if (callback) {
+                callback.apply(socket, args);
+              }
+            });
+          });
+        },
+        join: function(room, callback){
+          socket.emit("joinRoom", room, function(){
+            var args = arguments;
+            $rootScope.$apply(function(){
+              if(callback){
+                callback.apply(socket, args);
+              }
+            });
+          });
+        },
+        socket: socket
+      };
+    };
+  }
+
+  return ['$rootScope', socketFactoryFactory];
+});
+/**
+ * @module memapp.providers
+ * @class MomentFileSigResource
+ */
+
+define('src/providers/MomentFileSigResource',[], function() {
+    function MomentFileSigResource($resource, API_URL) {
+        return $resource(API_URL + "/momentfilesig", {});
+    }
+
+    return ['$resource', 'API_URL', MomentFileSigResource];
+});
+
+
 define('src/providers',[
   'src/providers/UserResource',
-  'src/providers/MemoryResource'
-], function (UserResource, MemoryResource) {
+  'src/providers/MemoryResource',
+  'src/providers/handleLoading',
+ 'src/providers/socketFactoryFactory',
+'src/providers/MomentFileSigResource'
+], function (UserResource, MemoryResource, handleLoading, socketFactoryFactory, MomentFileSigResource) {
   return angular.module("memapp.providers", ["ngResource"])
     .factory("MemoryResource", MemoryResource)
-    .factory("UserResource", UserResource);
+    .factory("MomentFileSigResource", MomentFileSigResource)
+    .factory("UserResource", UserResource)
+    .factory("handleLoading", handleLoading)
+    .factory("socketFactoryFactory", socketFactoryFactory);
 });
-define('src/directives',[], function () {
+
+define('src/directives/actionBarDirective',[], function () {
+  function actionBarDirective() {
+    return {
+    	restrict: "E",
+    	replace: true,
+    	transclude: true,
+    	templateUrl: "templates/directives/actionBarDirective.html"
+      };
+    }
+  return [actionBarDirective];
+});
+define('src/directives/memoryDetailDirective',[], function () {
+  function memoryDetailDirective() {
+    return {
+    	restrict: "E",
+    	replace: true,
+    	transclude: true,
+    	templateUrl: "templates/directives/memoryDetailDirective.html"
+      };
+    }
+  return [memoryDetailDirective];
+});
+define('src/directives/memorySummaryDirective',[], function () {
+  function memorySummaryDirective() {
+    return {
+    	restrict: "E",
+    	replace: true,
+    	templateUrl: "templates/directives/memoryDirective.html"
+      };
+    }
+  return [memorySummaryDirective];
+});
+define('src/directives/momentDetailDirective',[], function () {
+  function momentDetailDirective() {
+    return {
+    	restrict: "E",
+    	replace: true,
+    	templateUrl: "templates/directives/momentDetailDirective.html"
+      };
+    }
+  return [momentDetailDirective];
+});
+define('src/directives/momentSummaryDirective',[], function () {
+  function momentSummaryDirective() {
+    return {
+    	restrict: "E",
+    	replace: true,
+    	templateUrl: "templates/directives/momentSummaryDirective.html"
+      };
+    }
+  return [momentSummaryDirective];
+});
+define('src/directives/navBarDirective',[], function () {
+  function navBarDirective() {
+    return {
+    	restrict: "E",
+    	replace: true,
+    	transclude: true,
+    	templateUrl: "templates/directives/navBarDirective.html"
+      };
+    }
+  return [navBarDirective];
+});
+define('src/directives/timelineObjectDirective',[], function () {
+  function timelineObjectDirective() {
+    return {
+    	restrict: "E",
+    	replace: true,
+    	templateUrl: "templates/directives/timelineObjectDirective.html"
+      };
+    }
+  return [timelineObjectDirective];
+});
+define('src/directives',['src/directives/actionBarDirective', 'src/directives/memoryDetailDirective',
+  'src/directives/memorySummaryDirective', 'src/directives/momentDetailDirective',
+  'src/directives/momentSummaryDirective', 'src/directives/navBarDirective',
+  'src/directives/timelineObjectDirective'
+], function (actionBarDirective, memoryDetailDirective, memorySummaryDirective, momentDetailDirective,
+        momentSummaryDirective, navBarDirective, timelineObjectDirective) {
   return angular.module("memapp.directives", ["memapp.providers"])
     .directive('fa', [
 
@@ -137,7 +335,14 @@ define('src/directives',[], function () {
           }
         };
       }
-    ]);
+    ])
+    .directive('actionBar', actionBarDirective)
+    .directive('memoryDetail', memoryDetailDirective)
+    .directive('memorySummary', memorySummaryDirective)
+    .directive('momentDetail', momentDetailDirective)
+    .directive('momentSummary', momentSummaryDirective)
+    .directive('navBar', navBarDirective)
+    .directive('timelineObject', timelineObjectDirective);
 });
 define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directives'], function (config) {
   angular.module("memapp", [
@@ -158,7 +363,32 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
       $interpolateProvider.startSymbol('{[{')
         .endSymbol('}]}');
 
+      var removeTrailingSlash = function (path, query) {
+        if (path !== '/' && path.charAt(path.length - 1) === '/') {
+          return path.substring(0, path.length - 1) + query;
+        }
+      };
+      $urlRouterProvider.rule(function ($injector, $location) {
+        var url = $location.url();
+
+        var queryIndex = url.indexOf('?');
+        if (queryIndex === -1) {
+          return removeTrailingSlash(url, "");
+        } else {
+          return removeTrailingSlash(url.substring(0, queryIndex), url.substring(queryIndex));
+        }
+      });
       $urlRouterProvider.otherwise("/");
+
+      var resolveMemoryByStateParam = function (paramName) {
+return ['$stateParams', 'MemoryResource',
+              function ($stateParams, MemoryResource) {
+                return MemoryResource.get({
+                  id: $stateParams[paramName]
+                });
+              }
+            ]
+      };
 
       $stateProvider
         .state('memories', {
@@ -168,13 +398,21 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
         })
         .state('memories.add', {
           url: "/new",
-          templateUrl: "templates/new-memory.html",
-          controller: "EditMemoryCtrl"
+          templateUrl: "templates/edit-memory.html",
+          controller: "EditMemoryCtrl",
+          resolve: {
+            memory: [function () {
+              return null;
+            }]
+          }
         })
         .state('memories.view', {
           url: "/:id",
           templateUrl: "templates/memory.html",
-          controller: "MemoryCtrl"
+          controller: "MemoryCtrl",
+          resolve: {
+            memory: resolveMemoryByStateParam('id')
+          }
         })
         .state('memories.chat', {
           url: "/:id/chat",
@@ -182,9 +420,12 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
           controller: "ChatCtrl"
         })
         .state('memories.edit', {
-          url: "/:id/edit/",
+          url: "/:id/edit",
           templateUrl: "templates/edit-memory.html",
-          controller: "EditMemoryCtrl"
+          controller: "EditMemoryCtrl",
+          resolve: {
+            memory: resolveMemoryByStateParam('id')
+          }
         })
         .state('memories.moment', {
           url: ":id/facet/:momentId",

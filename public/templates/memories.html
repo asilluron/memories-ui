@@ -1,4 +1,11 @@
-<ul>
-  <li ng-repeat="memory in [1, 2, 3]">Memory</li>
-</ul>
+<nav-bar></nav-bar>
+<div class="navbar add-memory">
+	<a class="add-memory__link" ng-click="newMemory()"><i class="fa fa-2x fa-plus-circle"></i></a>
+</div>
+<div class="container">
+	<memory ng-repeat="memory in memories" content="memory"></memory>
+</div>
+
+
+
 <section ui-view></section>

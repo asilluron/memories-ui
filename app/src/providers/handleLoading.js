@@ -12,7 +12,7 @@ define([], function () {
         setLoading(false);
       }
       return model;
-    }
+    };
   }
 
   return [handleLoading];
