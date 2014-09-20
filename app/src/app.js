@@ -5,7 +5,8 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
     "memapp.directives",
     "ngCookies",
     "ui.router",
-    "ui.utils"
+    "ui.utils",
+    "ui.bootstrap"
   ])
     .constant("API_URL", config.API_URL)
     .run(function ($http, $cookies) {
@@ -24,15 +25,15 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
           templateUrl: "templates/memories.html",
           controller: "MemoriesCtrl"
         })
-        .state('memories.view', {
-          url: "/:id",
-          templateUrl: "templates/memory.html",
-          controller: "MemoryCtrl"
-        })
         .state('memories.add', {
           url: "/new",
           templateUrl: "templates/new-memory.html",
           controller: "EditMemoryCtrl"
+        })
+        .state('memories.view', {
+          url: "/:id",
+          templateUrl: "templates/memory.html",
+          controller: "MemoryCtrl"
         })
         .state('memories.chat', {
           url: "/:id/chat",

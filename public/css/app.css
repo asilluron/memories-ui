@@ -4536,6 +4536,9 @@ button.close {
   .hidden-print {
     display: none !important; } }
 
+.well {
+  background-color: #1c1e22; }
+
 body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
@@ -4742,7 +4745,7 @@ legend {
   text-decoration: none; }
 
 a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
-  border-color: #e3e3e3; }
+  border-color: #0c0d0e; }
 
 .jumbotron {
   border: 1px solid rgba(0, 0, 0, 0.6); }
@@ -6342,3 +6345,24 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
 .fa-meanpath:before {
   content: "\f20c"; }
+
+.radio-selected {
+  color: #5bc0de; }
+
+label {
+  font-weight: normal; }
+
+.wrapping-label {
+  display: block; }
+
+.help-block {
+  color: white; }
+
+.checkbox, .radio {
+  color: white; }
+
+.text-lg {
+  font-size: 18px; }
+
+.text-sm {
+  font-size: 12px; }

@@ -714,6 +714,17 @@ $panel-danger-border:         $panel-default-border;
 $panel-danger-heading-bg:     $state-danger-bg;
 
 
+//== Wells
+//
+//##
+
+$well-bg:                     darken($body-bg, 5%);
+$well-border:                 darken($well-bg, 7%);
+
+.well {
+  background-color: $well-bg;
+}
+
 //== Thumbnails
 //
 //##
@@ -731,14 +742,6 @@ $thumbnail-border-radius:     $border-radius-base;
 $thumbnail-caption-color:     $text-color;
 //** Padding around the thumbnail caption
 $thumbnail-caption-padding:   9px;
-
-
-//== Wells
-//
-//##
-
-$well-bg:                     darken($body-bg, 5%);
-$well-border:                 darken($well-bg, 7%);
 
 
 //== Badges
