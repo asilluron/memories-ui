@@ -1,10 +1,12 @@
 define([
   'src/providers/UserResource',
   'src/providers/MemoryResource',
-  'src/providers/handleLoading'
-], function (UserResource, MemoryResource, handleLoading) {
+  'src/providers/handleLoading',
+  'src/providers/MomentFileSigResource'
+], function (UserResource, MemoryResource, handleLoading, MomentFileSigResource) {
   return angular.module("memapp.providers", ["ngResource"])
     .factory("MemoryResource", MemoryResource)
+    .factory("MomentFileSigResource", MomentFileSigResource)
     .factory("UserResource", UserResource)
     .factory("handleLoading", handleLoading);
 });
