@@ -1719,10 +1719,6 @@ body {
     margin: 0;
     padding: 15px; } }
 
-@media only screen and (max-width: 640px) {
-  .logo {
-    font-size: 5em; } }
-
 .add-memory {
   width: 98%;
   margin-left: 1%;
