@@ -11571,7 +11571,8 @@ body {
   border-radius: 0 0 4px 4px; }
 
 .memory-container {
-  padding: 1em 0 1em 0; }
+  padding: 1em 0 1em 0;
+  height: 100%; }
 
 .memory-summary {
   position: relative;
