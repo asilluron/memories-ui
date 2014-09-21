@@ -21,12 +21,12 @@ define(function () {
     });
 
     var reset = function () {
+      $scope.momentFlag = null;
       $scope.moment = {};
       $scope.milestone = {};
     };
     reset();
 
-    $scope.momentFlag = null;
     $scope.newMoment = function(type) {
       if ($scope.momentFlag === type) {
         $scope.momentFlag = null;
@@ -35,13 +35,14 @@ define(function () {
       }
     };
 
+    var makeMomentResource = function (moment) {
+      var newMoment = new MomentResource();
+      angular.extend(newMoment, moment, {memory: memory._id, sharing: "private"});
+      return newMoment;
+    };
     $scope.addMoment = function(moment){
       $scope.addingMoment = true;
-      var newMoment = new MomentResource();
-      angular.extend(newMoment, moment);
-      angular.extend(newMoment, {memory: memory._id, sharing: "private"});
-      newMoment.$save(function(){
-        $scope.momentFlag = null;
+      makeMomentResource(moment).$save(function(){
         $scope.addingMoment = false;
         reset();
       });
@@ -49,11 +50,20 @@ define(function () {
 
     $scope.addMilestone = function (milestone, moment) {
       $scope.addingMoment = true;
-      var newMoment = new MomentResource();
-      angular.extend(newMoment, moment);
-      angular.extend(newMoment, {memory: memory._id, sharing: "private"});
-      newMoment.$save(function(){
-        $scope.momentFlag = null;
+      var newMilestone = new MilestoneResource();
+      angular.extend(newMilestone, {
+        memory: memory._id,
+        participation: 'anyone',
+        participants: [],
+        about: {
+          startDate: milestone.hasStartDate ? fromDualDate(milestone.startDate, milestone.startTime) : null,
+          endDate: milestone.hasEndDate ? fromDualDate(milestone.endDate, milestone.endTime) : null,
+          desc: ""
+        },
+        viewability: 'participant',
+        moment: angular.extend({}, moment, {sharing: "private"})
+      });
+      newMilestone.$save(function(){
         $scope.addingMoment = false;
         reset();
       });

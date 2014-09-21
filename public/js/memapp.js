@@ -101,6 +101,7 @@ define('src/controllers/MemoriesCtrl',[],function () {
         socket.on("helloWorld", function(data){
           console.log(data);
         });
+        socket.emit("handShake", {data: "TEST"});
         socket.on("milestone", function (msg) {
           console.log("new milestone action!", msg);
         });
@@ -143,12 +144,12 @@ define('src/controllers/MemoryCtrl',[],function () {
     });
 
     var reset = function () {
+      $scope.momentFlag = null;
       $scope.moment = {};
       $scope.milestone = {};
     };
     reset();
 
-    $scope.momentFlag = null;
     $scope.newMoment = function(type) {
       if ($scope.momentFlag === type) {
         $scope.momentFlag = null;
@@ -157,13 +158,14 @@ define('src/controllers/MemoryCtrl',[],function () {
       }
     };
 
+    var makeMomentResource = function (moment) {
+      var newMoment = new MomentResource();
+      angular.extend(newMoment, moment, {memory: memory._id, sharing: "private"});
+      return newMoment;
+    };
     $scope.addMoment = function(moment){
       $scope.addingMoment = true;
-      var newMoment = new MomentResource();
-      angular.extend(newMoment, moment);
-      angular.extend(newMoment, {memory: memory._id, sharing: "private"});
-      newMoment.$save(function(){
-        $scope.momentFlag = null;
+      makeMomentResource(moment).$save(function(){
         $scope.addingMoment = false;
         reset();
       });
@@ -171,11 +173,20 @@ define('src/controllers/MemoryCtrl',[],function () {
 
     $scope.addMilestone = function (milestone, moment) {
       $scope.addingMoment = true;
-      var newMoment = new MomentResource();
-      angular.extend(newMoment, moment);
-      angular.extend(newMoment, {memory: memory._id, sharing: "private"});
-      newMoment.$save(function(){
-        $scope.momentFlag = null;
+      var newMilestone = new MilestoneResource();
+      angular.extend(newMilestone, {
+        memory: memory._id,
+        participation: 'anyone',
+        participants: [],
+        about: {
+          startDate: milestone.hasStartDate ? fromDualDate(milestone.startDate, milestone.startTime) : null,
+          endDate: milestone.hasEndDate ? fromDualDate(milestone.endDate, milestone.endTime) : null,
+          desc: ""
+        },
+        viewability: 'participant',
+        moment: angular.extend({}, moment, {sharing: "private"})
+      });
+      newMilestone.$save(function(){
         $scope.addingMoment = false;
         reset();
       });
@@ -206,7 +217,26 @@ define('src/controllers/MemoryCtrl',[],function () {
 });
 
 define('src/controllers/RootCtrl',[],function () {
-  function RootCtrl($scope, $state, UserResource) {
+  function RootCtrl($scope, $state, $window, UserResource) {
+
+    if ($window.navigator.geolocation) {
+      $window.navigator.geolocation.getCurrentPosition(function (position) {
+        $scope.location = {
+          lat: position.coords.latitude,
+          long: position.coords.longitude
+        };
+      }, function () {
+
+      });
+    } else {
+      $scope.location = {
+        lat: null,
+        long: null
+      };
+    }
+
+
+
     $scope.$watch(function () {
       return $state.current;
     }, function (state) {
@@ -217,9 +247,7 @@ define('src/controllers/RootCtrl',[],function () {
       $scope.sanitizedCurrentStateName = state.name.replace(/\W/g, '-');
     });
 
-    $scope.user = UserResource.get({}).$promise.then(function(result){
-      console.log($scope.user);
-    });
+    $scope.user = UserResource.get({});
 
     $scope.title = ['m.emori.es'];
     $scope.setTitle = function (title) {
@@ -227,24 +255,53 @@ define('src/controllers/RootCtrl',[],function () {
       this.$on('$destroy', function () {
         $scope.title.shift();
       });
-    }
+    };
   }
-  return ["$scope", "$state", "UserResource",  RootCtrl];
+  return ["$scope", "$state", "$window", "UserResource", RootCtrl];
 });
-  
 
+define('src/controllers/ChatCtrl',[],function () {
+  function ChatCtrl($scope, memory, socketFactoryFactory) {
+   $scope.messages = [];
+
+   memory.$promise.then(function(result){
+       $scope.chatSocket = socketFactoryFactory(result._id);
+
+       $scope.chatSocket.join("chat");
+       $scope.chatSocket.emit("nameReg", {name: $scope.user.preferredName});
+
+       $scope.chatSocket.on("handShake", function(){
+         $scope.chatSocket.emit("nameReg", {name: $scope.user.preferredName});
+       });
+
+       $scope.chatSocket.on("chatMessage", function storeChatMessage(data){
+        $scope.messages.push(data);
+       });
+
+       $scope.sendMessage = function sendMessage(message){
+        $scope.chatSocket.emit("chatMessage", {text: message});
+   };
+   });
+
+
+  }
+
+  return ["$scope", "memory", "socketFactoryFactory", ChatCtrl];
+});
 define('src/controllers',[
     'src/controllers/EditMemoryCtrl',
     'src/controllers/MemoriesCtrl',
     'src/controllers/MemoryCtrl',
-    'src/controllers/RootCtrl'
+    'src/controllers/RootCtrl',
+    'src/controllers/ChatCtrl'
   ],
-  function (EditMemoryCtrl, MemoriesCtrl, MemoryCtrl, RootCtrl) {
+  function (EditMemoryCtrl, MemoriesCtrl, MemoryCtrl, RootCtrl, ChatCtrl) {
     return angular.module("memapp.controllers", [])
       .controller("EditMemoryCtrl", EditMemoryCtrl)
       .controller("MemoriesCtrl", MemoriesCtrl)
       .controller("MemoryCtrl", MemoryCtrl)
-      .controller("RootCtrl", RootCtrl);
+      .controller("RootCtrl", RootCtrl)
+      .controller("ChatCtrl", ChatCtrl);
   });
 /**
  * @module memapp.providers
@@ -290,7 +347,7 @@ define('src/providers/MemoryResource',[], function () {
 });
 define('src/providers/MilestoneResource',[], function () {
   function MilestoneResource($resource, API_URL) {
-    return $resource(API_URL + "/memory/:id/milestones", {});
+    return $resource(API_URL + "/memories/:id/milestones/:milestoneId", {id:'@memory', milestoneId:'@_id'});
   }
 
   return ['$resource', 'API_URL', MilestoneResource];
@@ -320,7 +377,9 @@ define('src/providers/handleLoading',[], function () {
 define('src/providers/socketFactoryFactory',[], function(){
   function socketFactoryFactory ($rootScope, API_URL){
     return function socketFactory(context){
-      var socket = io.connect(context ? API_URL + "/" + context : API_URL);
+      //"http:" + API_URL.split(":")[1] + ":8080";
+      var socketAPI = API_URL;
+      var socket = io.connect(context ? socketAPI + "/" + context : socketAPI);
       return {
         on: function (eventName, callback) {
           socket.on(eventName, function () {  
@@ -589,6 +648,41 @@ define('src/directives/s3upload',[], function() {
     return ['$http', 'MomentFileSigResource', 'UserResource', s3upload];
 });
 
+define('src/directives/map',[], function () {
+
+  var DEFAULT_ZOOM = 12;
+  function map($window) {
+    var directiveDefinitionObject = {
+      priority: 0,
+      replace: false,
+      transclude: false,
+      templateUrl: 'templates/directives/map.html',
+      restrict: 'E',
+      scope: {
+        lat: '=',
+        long: '=',
+        height: '@',
+        width: '@',
+        zoom: '=?'
+      },
+      link: function (scope, iElement) {
+
+        var mapCanvas = iElement.find(".map-canvas")[0];
+        var mapOptions = {
+          zoom: scope.zoom || DEFAULT_ZOOM,
+          center: new $window.google.maps.LatLng(scope.lat, scope.long)
+        };
+
+        var map = new $window.google.maps.Map(mapCanvas,mapOptions);
+
+      }
+    };
+    return directiveDefinitionObject;
+  }
+
+  return ['$window', map];
+});
+
 define('src/directives/loader',[], function () {
   function loader() {
     return {
@@ -612,9 +706,9 @@ define('src/directives/loader',[], function () {
 define('src/directives',['src/directives/actionBarDirective', 'src/directives/memoryDetailDirective',
   'src/directives/memorySummaryDirective', 'src/directives/momentDetailDirective',
   'src/directives/momentSummaryDirective', 'src/directives/navBarDirective',
-  'src/directives/timelineObjectDirective', 'src/directives/s3upload', 'src/directives/loader'
+  'src/directives/timelineObjectDirective', 'src/directives/s3upload','src/directives/map', 'src/directives/loader'
 ], function (actionBarDirective, memoryDetailDirective, memorySummaryDirective, momentDetailDirective,
-        momentSummaryDirective, navBarDirective, timelineObjectDirective, s3upload, loader) {
+        momentSummaryDirective, navBarDirective, timelineObjectDirective, s3upload, map, loader) {
   return angular.module("memapp.directives", ["memapp.providers"])
     .directive('fa', [
 
@@ -630,6 +724,7 @@ define('src/directives',['src/directives/actionBarDirective', 'src/directives/me
         };
       }
     ])
+    .directive('map', map)
     .directive('loader', loader)
     .directive('onReturn', [function () {
       return {

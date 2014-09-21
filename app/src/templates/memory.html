@@ -69,18 +69,18 @@
                 </p>
               </div>
             </div>
+        </div>
+        <div class="col-xs-5">
             <div class="row">
-              <div class="col-sm-6">
-                <map lat="location.lat" long="location.long" height="200px" width="200px"></map>
-              </div>
+                <div class="col-xs-4">
+                    <input ng-model="moment.imageUrl" type="hidden">
+                    Optional: <s3upload url="moment.imageUrl"></s3upload>
+                </div>
+                <div class="col-xs-8">
+                    <img class="img-thumbnail" ng-src="{[{moment.imageUrl}]}" ng-show="moment.imageUrl">
+                </div>
             </div>
-        </div>
-        <div class="col-xs-2">
-            <input ng-model="moment.imageUrl" type="hidden">
-            Optional: <s3upload url="moment.imageUrl"></s3upload>
-        </div>
-        <div class="col-xs-3">
-            <img class="img-thumbnail" ng-src="{[{moment.imageUrl}]}" ng-show="moment.imageUrl">
+            <map lat="location.lat" long="location.long" height="200px" width="100%"></map>
         </div>
         <div class="col-xs-3">
             <button ng-click="addMilestone(milestone, moment)" class="btn btn-primary btn-lg btn-block" ng-disabled="milestormForm.$invalid || addingMoment">Create Milestone</button>

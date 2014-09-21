@@ -1,6 +1,6 @@
 define([], function () {
 
-
+  var DEFAULT_ZOOM = 12;
   function map($window) {
     var directiveDefinitionObject = {
       priority: 0,
@@ -12,13 +12,14 @@ define([], function () {
         lat: '=',
         long: '=',
         height: '@',
-        width: '@'
+        width: '@',
+        zoom: '=?'
       },
       link: function (scope, iElement) {
 
         var mapCanvas = iElement.find(".map-canvas")[0];
         var mapOptions = {
-          zoom: 8,
+          zoom: scope.zoom || DEFAULT_ZOOM,
           center: new $window.google.maps.LatLng(scope.lat, scope.long)
         };
 
