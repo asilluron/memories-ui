@@ -84,6 +84,9 @@ define(function () {
         });
     };
 
+    var fromDualDate = function (date, time) {
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate(), time.getHours(), time.getMinutes(), 0, 0);
+    };
     $scope.addMilestone = function (milestone, moment) {
       $scope.addingMoment = true;
       var newMilestone = new MilestoneResource();

@@ -19,16 +19,16 @@
     </div>
     <div class="event-content" ng-if="timelineEvent.type === 'milestone'">
       <h3 class="milestone-name"><i fa="flag"></i> {{ timelineEvent.value.about.primaryMoment.text }}</h3>
-      <p class="milestone-date" ng-show="timelineEvent.value.startDate || timelineEvent.value.endDate">
-        <div class="date-range" ng-if="memory.startDate || timelineEvent.value.endDate">
+      <p class="milestone-date" ng-if="timelineEvent.value.about.startDate || timelineEvent.value.about.endDate">
+        <div class="date-range">
           <span class="date-range-start">
-            <span ng-if="timelineEvent.value.startDate">{{ timelineEvent.value.startDate | date:'mediumDate' }}</span>
-            <span ng-if="!timelineEvent.value.startDate">?</span>
+            <span ng-if="timelineEvent.value.about.startDate">{{ timelineEvent.value.about.startDate | date:'medium' }}</span>
+            <span ng-if="!timelineEvent.value.about.startDate">?</span>
           </span>
           <span class="date-range-separator">-</span>
           <span class="date-range-end">
-            <span ng-if="timelineEvent.value.endDate">{{ timelineEvent.value.endDate | date:'mediumDate' }}</span>
-            <span ng-if="!timelineEvent.value.endDate">?</span>
+            <span ng-if="timelineEvent.value.about.endDate">{{ timelineEvent.value.about.endDate | date:'medium' }}</span>
+            <span ng-if="!timelineEvent.value.about.endDate">?</span>
           </span>
         </div>
       </p>
