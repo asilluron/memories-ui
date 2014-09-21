@@ -19,6 +19,23 @@ define(function () {
         $scope.timelineEvents = timelineEventZipper.zip($scope.moments, null, true);
       });
     });
+
+    $scope.newMoment=function(type){
+      $scope.momentFlag = type;
+
+    };
+
+    $scope.addMoment = function(moment){
+      $scope.addingMoment = true;
+      var newMoment = new MomentResource();
+      angular.extend(newMoment, moment);
+      angular.extend(newMoment, {memory: memory._id, sharing: "private"});
+      newMoment.$save(function(){
+        $scope.momentFlag = false;
+        $scope.addingMoment = false;
+      });
+
+    };
   }
 
   return ["$scope", "handleLoading", "memory", "MomentResource", "timelineEventZipper", MemoryCtrl];

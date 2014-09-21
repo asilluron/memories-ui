@@ -1,5 +1,11 @@
+<div ng-if='currentState.name=="memories.view"'>
+    <!-- Do nothing, hide for now -->
+</div>
 
-<div class="navbar sub-navbar">
-    <a class="add-memory__link" ui-sref='memories.add' ui-sref-active="active"><i fa="2x plus-circle"></i></a>
+
+<div ng-if='currentState.name=="memories"'>
+    <div class="navbar sub-navbar">
+        <a class="add-memory__link" ui-sref='memories.add' ui-sref-active="active"><i fa="2x plus-circle"></i></a>
+    </div>
 </div>
 

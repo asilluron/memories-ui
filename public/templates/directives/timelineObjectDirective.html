@@ -15,7 +15,7 @@
     </div>
     <div class="event-content" ng-if="timelineEvent.type === 'image'">
       <p ng-bind="timelineEvent.value.text" ng-show="timelineEvent.value.text"></p>
-      <p><img class="img-rounded" ng-src="timelineEvent.value.imageUrl"></p>
+      <p><img class="img-rounded" ng-src="{{timelineEvent.value.imageUrl}}"></p>
     </div>
     <div class="event-content" ng-if="timelineEvent.type === 'milestone'">
       <p>Milestone!</p>

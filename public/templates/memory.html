@@ -1,5 +1,31 @@
+<div class="navbar sub-navbar">
+    <p class="navbar-text navbar-right"><a class="add-memory__link" ><i fa="2x pencil-square-o"></i></a></p>
+    <p ng-click="newMoment('photo')" class="navbar-text navbar-right"><a class="add-memory__link" ><i fa="2x camera"></i></a></p>
+    <p class="navbar-text navbar-right"><a class="add-memory__link"  ><i fa="2x flag"></i></a></p>
+    <p class="navbar-text navbar-right"><a class="add-memory__link"><i fa="2x user"></i></a></p>
+</div>
+<div class="container" ng-if="momentFlag=='photo'">
+    <div class="row">
+        <div class="col-xs-4">
+            <input ng-model="moment.text" type="text" class="form-control" placeholder="Describe your {[{momentFlag}]}">
+        </div>
+        <div class="col-xs-2">
+            <input ng-model="moment.imageUrl" type="hidden">
+            <s3upload url="moment.imageUrl"></s3upload>
+        </div>
+        <div class="col-xs-3" ng-show="moment.imageUrl">
+                <img class="img-thumbnail" ng-src="{[{moment.imageUrl}]}">
+        </div>
+        <div class="col-xs-3" ng-show="moment.imageUrl">
+            <a ng-click="addMoment(moment)" class="btn btn-primary">Post</a>
+        </div>
+    </div>
+    <div class="row">
+
+    </div>
+</div>
 <loader on="loading" message="Loading memory" error="loadError">
-  <loader on="loadingMoments" message="Loading moments" error="loadMomentsError">
-    <div ng-include="'templates/timeline.html'"></div>
-  </loader>
+<loader on="loadingMoments" message="Loading moments" error="loadMomentsError">
+<div ng-include="'templates/timeline.html'"></div>
+</loader>
 </loader>
