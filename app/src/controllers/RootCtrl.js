@@ -1,5 +1,5 @@
 define(function () {
-  function RootCtrl($scope, $state, $window, UserResource) {
+  function RootCtrl($scope, $state, $window, $cookies, UserResource) {
 
     if ($window.navigator.geolocation) {
       $window.navigator.geolocation.getCurrentPosition(function (position) {
@@ -38,6 +38,12 @@ define(function () {
         $scope.title.shift();
       });
     };
+
+    $scope.logout = function () {
+      delete $cookies.jwt;
+      $state.go('home');
+    }
+
   }
-  return ["$scope", "$state", "$window", "UserResource", RootCtrl];
+  return ["$scope", "$state", "$window", "$cookies", "UserResource", RootCtrl];
 });

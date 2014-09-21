@@ -51,7 +51,7 @@
                     <input type="checkbox" value="remember-me" ng-model="user.rememberMe"> Remember me
                 </label>
             </div>
-            <button class="btn btn-lg btn-primary btn-block" type="submit" ng-disabled="loginForm.$invalid">Sign in</button>
+            <button class="btn btn-lg btn-primary btn-block" type="submit" ng-disabled="loginForm.$invalid || pending"><i fa="spin spinner" ng-show="pending"></i> Sign in</button>
             <p ng-if="error">There was an error signing in, please try again.</p>
             <a href="" ng-click="changeToRegister()">Don't have an account? Sign up today!</a>
         </form>
@@ -63,7 +63,7 @@
             <input name="password" type="password" class="form-control" placeholder="Password" required ng-model="registerUser.password">
             <input name="confirmPassword" type="password" class="form-control" placeholder="Confirm Password" required ng-model="registerUser.confirmPassword">
             <div ng-if="registerUser.password !== registerUser.confirmPassword">Both passwords must match.</div>
-            <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+            <button class="btn btn-lg btn-primary btn-block" type="submit" ng-disabled="pending"><i fa="spin spinner" ng-show="pending"></i> Register</button>
             <p ng-if="error">There was an error signing in, please try again.</p>
             <a href="" ng-click="changeToLogin()">Already have an account? Sign in</a>
         </form>
