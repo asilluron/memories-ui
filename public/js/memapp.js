@@ -282,6 +282,13 @@ define('src/providers/MemoryResource',[], function () {
 
   return ['$resource', 'API_URL', MemoryResource];
 });
+define('src/providers/MilestoneResource',[], function () {
+  function MilestoneResource($resource, API_URL) {
+    return $resource(API_URL + "/memory/:id/milestones", {});
+  }
+
+  return ['$resource', 'API_URL', MilestoneResource];
+});
 define('src/providers/handleLoading',[], function () {
   function handleLoading() {
     return function (model, setLoading, setError, onLoaded) {
@@ -438,14 +445,16 @@ define('src/providers/timelineEventZipper',[], function(){
 define('src/providers',[
   'src/providers/UserResource',
   'src/providers/MemoryResource',
+  'src/providers/MilestoneResource',
   'src/providers/handleLoading',
   'src/providers/socketFactoryFactory',
   'src/providers/MomentFileSigResource',
   'src/providers/MomentResource',
   'src/providers/timelineEventZipper'
-], function (UserResource, MemoryResource, handleLoading, socketFactoryFactory, MomentFileSigResource, MomentResource, timelineEventZipper) {
+], function (UserResource, MemoryResource, MilestoneResource, handleLoading, socketFactoryFactory, MomentFileSigResource, MomentResource, timelineEventZipper) {
   return angular.module("memapp.providers", ["ngResource"])
     .factory("MemoryResource", MemoryResource)
+    .factory("MilestoneResource", MilestoneResource)
     .factory("MomentFileSigResource", MomentFileSigResource)
     .factory("MomentResource", MomentResource)
     .factory("UserResource", UserResource)
