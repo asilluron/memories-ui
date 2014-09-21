@@ -1,10 +1,10 @@
 <div class="timeline">
 	<div class="timeline-body">
 		<div class="timeline-title">
-			{{moment.properties.name}}
+			{[{memory.about.name}]}
 		</div>
 		<ol class="timeline-events">
-			<timeline-object ng-repeat="event in events"></timeline-object>
+			<li><timeline-object ng-repeat="timelineEvent in timelineEvents"></timeline-object></li>
 		</ol>
 	</div>
 </div>

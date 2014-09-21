@@ -1,19 +1,18 @@
-     <li>
-        <div class="timeline-event__icon">
-          <div class="timeline-info">
-            <i ng-class="{milestone||photo||image}"></i>
-            <div class="timeline__timeline-date">
-              <div class="timeline-date--date">{{event.date}}.
-              </div>
-              <div class="timeline-date--time">{{event.time}}
-              </div>
-             </div>
-           </div>
+<li class="timeline-event--{{ timelineEvent.type }}">
+  <div class="timeline-event__icon">
+    <div class="timeline-info">
+      <div class="timeline__timeline-date">
+        <div class="timeline-date--date">{[{timelineEvent.date|date}]}.
         </div>
-        <!--- End icon -->
-        <div class="event__event-content timeline-event appear-animation fadeInRight appear-animation-visible" data-appear-animation="fadeInRight" data-appear-animation-delay="400">
-            <p class="event-content">
-             {{event.content}} <a class="location">{{event.location}}</a>
-            </p>
-          </div>  
-      </li>
+        <div class="timeline-date--time">{[{timelineEvent.date|date}]}
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--- End icon -->
+  <div class="event__event-content timeline-event appear-animation fadeInRight appear-animation-visible" data-appear-animation="fadeInRight" data-appear-animation-delay="400">
+    <p class="event-content">
+     {[{timelineEvent.value}]} <a class="location">{[{timelineEvent.value.location}]}</a>
+   </p>
+ </div>  
+</li>

@@ -7,5 +7,13 @@
 <div ng-show="!loading && !loadError">
   Aw shit yeah, I got a memory!
 
-  <pre>{[{ memory|json }]}</pre>
+  <div ng-show="loadingMoments">
+    <i fa="spinner spin"></i> Loading moments...
+  </div>
+  <div ng-show="!loadingMoments && loadMomentsError">
+    Error loading moments
+  </div>
+  <div ng-show="!loadingMoments && !loadMomentsError">
+    <div ng-include="'templates/timeline.html'"></div>
+  </div>
 </div>

@@ -116,15 +116,29 @@ define('src/controllers/MemoriesCtrl',[],function () {
   
 
 define('src/controllers/MemoryCtrl',[],function () {
-  function MemoryCtrl($scope, handleLoading, memory) {
+  function MemoryCtrl($scope, handleLoading, memory, MomentResource, timelineEventZipper) {
     $scope.memory = handleLoading(memory, function (value) {
       $scope.loading = value;
     }, function (error) {
       $scope.loadError = error;
     });
+    $scope.moments = [];
+    $scope.timelineEvents = [];
+    $scope.memory.$promise.then(function () {
+      $scope.moments = handleLoading(MomentResource.query({id:memory._id}), function (value) {
+        $scope.loadingMoments = value;
+      }, function (error) {
+        $scope.loadMomentsError = error;
+      });
+
+      $scope.moments.$promise.then(function () {
+        debugger;
+        $scope.timelineEvents = timelineEventZipper.zip($scope.moments, null, true);
+      });
+    });
   }
 
-  return ["$scope", "handleLoading", "memory", MemoryCtrl];
+  return ["$scope", "handleLoading", "memory", "MomentResource", "timelineEventZipper", MemoryCtrl];
 });
 define('src/controllers/RootCtrl',[],function () {
   function RootCtrl($scope, $state) {
@@ -272,21 +286,97 @@ define('src/providers/MomentFileSigResource',[], function() {
 });
 
 
+define('src/providers/MomentResource',[], function () {
+  function MomentResource($resource, API_URL) {
+    return $resource(API_URL + "/memories/:id/moments/:momentId", {id:'@memory', momentId:'@_id'});
+  }
+
+  return ['$resource', 'API_URL', MomentResource];
+});
+
+
+define('src/providers/timelineEventZipper',[], function(){
+  function timelineEventZipper() {
+    var toDate = function (value) {
+      if (value instanceof Date) {
+        return value;
+      } else if (typeof value === 'number' || typeof value === 'string') {
+        return new Date(value);
+      } else {
+        return null;
+      }
+    };
+    var cmp = function (a, b) {
+      return a === b ? 0 : a < b ? -1 : 1;
+    };
+    var getEventDate = function (event) {
+      if (event.createdDate) {
+        return toDate(event.createdDate);
+      } else if (event.startDate) {
+        return toDate(event.startDate);
+      } else if (event.endDate) {
+        return toDate(event.endDate);
+      } else {
+        return null;
+      }
+    };
+    var sortByDate = function (items) {
+      items.sort(function (a, b) {
+        return cmp(a.date, b.date);
+      });
+    };
+    var makeEvent = function (type, value, date) {
+      return {
+        type: type,
+        value: value,
+        date: date
+      };
+    };
+    var calculateMomentType = function (moment) {
+      return 'text';
+    };
+    var momentToEvent = function (moment) {
+      return makeEvent(calculateMomentType(moment), moment, getEventDate(moment));
+    };
+    var milestoneToEvent = function (milestone) {
+      return makeEvent('milestone', milestone, getEventDate(milestone));
+    };
+    var zip = function (moments, milestones, descending) {
+      var events = moments.map(momentToEvent).concat(milestones.map(milestoneToEvent));
+      sortByDate(events);
+      if (descending) {
+        events.reverse();
+      }
+      return events;
+    };
+    this.zip = function (moments, milestones, descending) {
+      return zip(
+        moments || [],
+        milestones || [],
+        !!descending);
+    };
+  }
+
+  return [timelineEventZipper];
+});
 define('src/providers',[
   'src/providers/UserResource',
   'src/providers/MemoryResource',
   'src/providers/handleLoading',
- 'src/providers/socketFactoryFactory',
-'src/providers/MomentFileSigResource'
-], function (UserResource, MemoryResource, handleLoading, socketFactoryFactory, MomentFileSigResource) {
+  'src/providers/socketFactoryFactory',
+  'src/providers/MomentFileSigResource',
+  'src/providers/MomentResource',
+  'src/providers/timelineEventZipper'
+], function (UserResource, MemoryResource, handleLoading, socketFactoryFactory, MomentFileSigResource, MomentResource, timelineEventZipper) {
   return angular.module("memapp.providers", ["ngResource"])
     .factory("MemoryResource", MemoryResource)
     .factory("MomentFileSigResource", MomentFileSigResource)
+    .factory("MomentResource", MomentResource)
     .factory("UserResource", UserResource)
     .factory("handleLoading", handleLoading)
-    .factory("socketFactoryFactory", socketFactoryFactory);
+    .factory("socketFactoryFactory", socketFactoryFactory)
+    .service("timelineEventZipper", timelineEventZipper);
 });
-
 define('src/directives/actionBarDirective',[], function () {
   function actionBarDirective() {
     return {
