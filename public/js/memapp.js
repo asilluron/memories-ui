@@ -98,7 +98,9 @@ define('src/controllers/MemoriesCtrl',[],function () {
     $scope.memories.$promise.then(function (memories) {
       memories.forEach(function (memory) {
         var socket = memory.socket = socketFactoryFactory(memory._id);
-        socket.join('chat');
+        socket.on("helloWorld", function(data){
+          console.log(data);
+        });
         socket.on("milestone", function (msg) {
           console.log("new milestone action!", msg);
         });
@@ -204,7 +206,7 @@ define('src/controllers/MemoryCtrl',[],function () {
 });
 
 define('src/controllers/RootCtrl',[],function () {
-  function RootCtrl($scope, $state) {
+  function RootCtrl($scope, $state, UserResource) {
     $scope.$watch(function () {
       return $state.current;
     }, function (state) {
@@ -215,6 +217,10 @@ define('src/controllers/RootCtrl',[],function () {
       $scope.sanitizedCurrentStateName = state.name.replace(/\W/g, '-');
     });
 
+    $scope.user = UserResource.get({}).$promise.then(function(result){
+      console.log($scope.user);
+    });
+
     $scope.title = ['m.emori.es'];
     $scope.setTitle = function (title) {
       $scope.title.unshift(title);
@@ -223,7 +229,7 @@ define('src/controllers/RootCtrl',[],function () {
       });
     }
   }
-  return ["$scope", "$state", RootCtrl];
+  return ["$scope", "$state", "UserResource",  RootCtrl];
 });
   
 
@@ -314,7 +320,7 @@ define('src/providers/handleLoading',[], function () {
 define('src/providers/socketFactoryFactory',[], function(){
   function socketFactoryFactory ($rootScope, API_URL){
     return function socketFactory(context){
-      var socket = io.connect(API_URL + "/" + context);
+      var socket = io.connect(context ? API_URL + "/" + context : API_URL);
       return {
         on: function (eventName, callback) {
           socket.on(eventName, function () {  
@@ -733,7 +739,10 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
         .state('memories.chat', {
           url: "/:id/chat",
           templateUrl: "templates/chat.html",
-          controller: "ChatCtrl"
+          controller: "ChatCtrl",
+          resolve: {
+            memory: resolveMemoryByStateParam('id')
+          }
         })
         .state('memories.edit', {
           url: "/:id/edit",

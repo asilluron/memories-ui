@@ -81,7 +81,10 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
         .state('memories.chat', {
           url: "/:id/chat",
           templateUrl: "templates/chat.html",
-          controller: "ChatCtrl"
+          controller: "ChatCtrl",
+          resolve: {
+            memory: resolveMemoryByStateParam('id')
+          }
         })
         .state('memories.edit', {
           url: "/:id/edit",

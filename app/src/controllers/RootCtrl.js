@@ -1,5 +1,5 @@
 define(function () {
-  function RootCtrl($scope, $state, $window) {
+  function RootCtrl($scope, $state, $window, UserResource) {
 
     if ($window.navigator.geolocation) {
       $window.navigator.geolocation.getCurrentPosition(function (position) {
@@ -29,6 +29,10 @@ define(function () {
       $scope.sanitizedCurrentStateName = state.name.replace(/\W/g, '-');
     });
 
+    $scope.user = UserResource.get({}).$promise.then(function(result){
+      console.log($scope.user);
+    });
+
     $scope.title = ['m.emori.es'];
     $scope.setTitle = function (title) {
       $scope.title.unshift(title);
@@ -37,5 +41,5 @@ define(function () {
       });
     };
   }
-  return ["$scope", "$state", "$window", RootCtrl];
+  return ["$scope", "$state", "$window", "UserResource", RootCtrl];
 });

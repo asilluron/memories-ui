@@ -8,7 +8,9 @@ define(function () {
     $scope.memories.$promise.then(function (memories) {
       memories.forEach(function (memory) {
         var socket = memory.socket = socketFactoryFactory(memory._id);
-        socket.join('chat');
+        socket.on("helloWorld", function(data){
+          console.log(data);
+        });
         socket.on("milestone", function (msg) {
           console.log("new milestone action!", msg);
         });
