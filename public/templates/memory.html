@@ -68,11 +68,7 @@
                   <timepicker ng-model="milestone.endTime" minute-step="15" show-meridian="true" class="timepicker"></timepicker>
                 </p>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-sm-6">
-                <map lat="location.lat" long="location.long" height="200px" width="200px"></map>
-              </div>
+
             </div>
         </div>
         <div class="col-xs-5">
@@ -86,6 +82,7 @@
                 </div>
             </div>
             <map lat="location.lat" long="location.long" height="200px" width="100%"></map>
+            <location-type-ahead lat="location.lat" long="location.long"></location-type-ahead>
         </div>
         <div class="col-xs-3">
             <button ng-click="addMilestone(milestone, moment)" class="btn btn-primary btn-lg btn-block" ng-disabled="milestormForm.$invalid || addingMoment">Create Milestone</button>

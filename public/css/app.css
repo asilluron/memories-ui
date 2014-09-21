@@ -11646,3 +11646,7 @@ label {
 
 .milestone-name {
   margin: 0; }
+
+location-type-ahead, location-type-ahead input {
+  display: block;
+  width: 100%; }
