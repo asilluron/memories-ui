@@ -58,7 +58,7 @@
       </li>
       <li class="text-right">
         <span class="text-danger" ng-if="errorMessage" ng-bind="'Error: ' + errorMessage"></span>
-        <button type="submit" class="btn btn-primary btn-lg" ng-click="save()" ng-disabled="memoryForm.$invalid || saving">
+        <button type="submit" class="btn btn-primary btn-lg btn-block" ng-click="save()" ng-disabled="memoryForm.$invalid || saving">
           <span ng-hide="saving">{[{ isNew ? 'Create' : 'Update' }]}</span>
           <span ng-show="saving"><i fa="spinner spin"></i> {[{ isNew ? 'Creating' : 'Updating' }]}</span>
         </button>
