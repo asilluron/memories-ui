@@ -1,9 +1,9 @@
 "use strict";
 
 define([], function(){
-  function socketFactoryFactory ($rootScope){
+  function socketFactoryFactory ($rootScope, API_URL){
     return function socketFactory(context){
-      var socket = io.connect(context);
+      var socket = io.connect(API_URL + "/" + context);
       return {
         on: function (eventName, callback) {
           socket.on(eventName, function () {  
@@ -38,5 +38,5 @@ define([], function(){
     };
   }
 
-  return ['$rootScope', socketFactoryFactory];
+  return ['$rootScope', "API_URL", socketFactoryFactory];
 });
