@@ -32,7 +32,7 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
           return removeTrailingSlash(url.substring(0, queryIndex), url.substring(queryIndex));
         }
       });
-      $urlRouterProvider.otherwise("/");
+      $urlRouterProvider.otherwise("/memories");
 
       var resolveMemoryByStateParam = function (paramName) {
         return ['$stateParams', 'MemoryResource',

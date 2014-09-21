@@ -579,7 +579,7 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
           return removeTrailingSlash(url.substring(0, queryIndex), url.substring(queryIndex));
         }
       });
-      $urlRouterProvider.otherwise("/");
+      $urlRouterProvider.otherwise("/memories");
 
       var resolveMemoryByStateParam = function (paramName) {
         return ['$stateParams', 'MemoryResource',
@@ -588,7 +588,7 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
               id: $stateParams[paramName]
             });
           }
-        ]
+        ];
       };
 
       $stateProvider
@@ -598,6 +598,9 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
             "main": {
               templateUrl: "templates/memories.html",
               controller: "MemoriesCtrl"
+            },
+            "header": {
+              templateUrl: "templates/actionbars/memories.html"
             }
           }
 
