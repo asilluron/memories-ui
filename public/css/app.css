@@ -11563,6 +11563,12 @@ body {
   .memories__nav .logo {
     font-size: 3em; }
 
+.sub-navbar {
+  width: 98%;
+  margin-left: 1%;
+  border-top: 0;
+  border-radius: 0 0 4px 4px; }
+
 .radio-selected {
   color: #5bc0de; }
 
