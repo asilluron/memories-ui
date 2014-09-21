@@ -10,7 +10,7 @@
           <textarea ng-model="moment.text" class="form-control" placeholder="Write your message" on-return="messageForm.$valid && addMoment(moment)" required></textarea>
         </div>
         <div class="col-xs-3">
-          <button ng-click="addMoment(moment)" class="btn btn-primary btn-lg btn-block" ng-disabled="messageForm.$invalid || addingMoment">Post Message</button>
+          <button ng-click="addMoment(moment)" class="btn btn-primary btn-lg btn-block" ng-disabled="messageForm.$invalid || addingMoment"><i fa="newspaper-o"></i> Post Message</button>
         </div>
     </form>
 </div>
@@ -27,7 +27,7 @@
             <img class="img-thumbnail" ng-src="{[{moment.imageUrl}]}" ng-show="moment.imageUrl">
         </div>
         <div class="col-xs-3">
-            <button ng-click="addMoment(moment)" class="btn btn-primary btn-lg btn-block" ng-disabled="photoForm.$invalid || addingMoment">Upload Photo</button>
+            <button ng-click="addMoment(moment)" class="btn btn-primary btn-lg btn-block" ng-disabled="photoForm.$invalid || addingMoment"><i fa="upload"></i> Upload Photo</button>
         </div>
     </form>
 </div>
@@ -85,12 +85,19 @@
             <location-type-ahead lat="location.lat" long="location.long"></location-type-ahead>
         </div>
         <div class="col-xs-3">
-            <button ng-click="addMilestone(milestone, moment)" class="btn btn-primary btn-lg btn-block" ng-disabled="milestormForm.$invalid || addingMoment">Create Milestone</button>
+            <button ng-click="addMilestone(milestone, moment)" class="btn btn-primary btn-lg btn-block" ng-disabled="milestormForm.$invalid || addingMoment"><i fa="flag-checkered"></i> Create Milestone</button>
         </div>
     </div>
 </div>
 <div class="container-fluid well" ng-if="momentFlag=='invite'">
-Rofl
+    <form name="messageForm" class="row">
+        <div class="col-xs-9">
+          <input type="email" ng-model="invitation.email" class="form-control" placeholder="Email of your friend" on-return="messageForm.$valid && addInvite(invitation)" required>
+        </div>
+        <div class="col-xs-3">
+          <button ng-click="addInvite(invitation)" class="btn btn-primary btn-lg btn-block" ng-disabled="messageForm.$invalid || addingMoment"><i fa="send-o"></i> Send Invite</button>
+        </div>
+    </form>
 </div>
 <loader on="loading" message="Loading memory" error="loadError">
 <loader on="loadingMoments || loadingMilestones" message="Loading moments" error="loadMomentsError || loadMilestonesError">

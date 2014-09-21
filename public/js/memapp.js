@@ -184,7 +184,7 @@ define('src/controllers/MemoriesCtrl',[],function () {
   
 
 define('src/controllers/MemoryCtrl',[],function () {
-  function MemoryCtrl($scope, $rootScope, $q, handleLoading, memory, MilestoneResource, MomentResource,
+  function MemoryCtrl($scope, $rootScope, $q, handleLoading, memory, MilestoneResource, MomentResource, MemoryResource,
     timelineEventZipper, uberService) {
     $scope.memory = handleLoading(memory, function (value) {
       $scope.loading = value;
@@ -241,6 +241,7 @@ define('src/controllers/MemoryCtrl',[],function () {
       $scope.momentFlag = null;
       $scope.moment = {};
       $scope.milestone = {};
+      $scope.invitation = {};
     };
     reset();
 
@@ -293,30 +294,38 @@ define('src/controllers/MemoryCtrl',[],function () {
         $scope.addingMoment = false;
         reset();
       });
-    }
+    };
 
     $scope.enableMilestoneStartDate = function () {
       $scope.milestone.hasStartDate = true;
       $scope.milestone.startDate = new Date();
       $scope.milestone.startTime = new Date();
-    }
+    };
 
     $scope.disableMilestoneStartDate = function () {
       $scope.milestone.hasStartDate = false;
-    }
+    };
 
     $scope.enableMilestoneEndDate = function () {
       $scope.milestone.hasEndDate = true;
       $scope.milestone.endDate = new Date();
       $scope.milestone.endTime = new Date();
-    }
+    };
 
     $scope.disableMilestoneEndDate = function () {
       $scope.milestone.hasEndDate = false;
-    }
+    };
+
+    $scope.addInvite = function (invitation) {
+      // TODO: error handling
+      MemoryResource.invite($scope.memory, invitation.email)
+        .then(function () {
+          reset();
+        });
+    };
   }
 
-  return ["$scope", "$rootScope", "$q", "handleLoading", "memory", "MilestoneResource", "MomentResource",
+  return ["$scope", "$rootScope", "$q", "handleLoading", "memory", "MilestoneResource", "MomentResource", "MemoryResource",
     "timelineEventZipper", "uberService", MemoryCtrl
   ];
 });
@@ -440,8 +449,8 @@ define('src/providers/UserResource',[], function() {
 });
 
 define('src/providers/MemoryResource',[], function () {
-  function MemoryResource($resource, API_URL) {
-    return $resource(API_URL + "/memories/:id", {id:'@_id'}, {
+  function MemoryResource($resource, $http, API_URL) {
+    var resource = $resource(API_URL + "/memories/:id", {id:'@_id'}, {
       update: {
         method: 'PATCH',
         transformRequest: function (memory) {
@@ -464,9 +473,19 @@ define('src/providers/MemoryResource',[], function () {
         }
       }
     });
+
+    resource.invite = function (memory, email) {
+      return $http.post(API_URL + "/memories/" + memory._id + "/invite", {
+        email: email
+      }).then(function (response) {
+        return response.data;
+      });
+    };
+
+    return resource;
   }
 
-  return ['$resource', 'API_URL', MemoryResource];
+  return ['$resource', '$http', 'API_URL', MemoryResource];
 });
 define('src/providers/MilestoneResource',[], function () {
   function MilestoneResource($resource, API_URL) {

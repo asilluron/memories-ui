@@ -1,6 +1,6 @@
 define([], function () {
-  function MemoryResource($resource, API_URL) {
-    return $resource(API_URL + "/memories/:id", {id:'@_id'}, {
+  function MemoryResource($resource, $http, API_URL) {
+    var resource = $resource(API_URL + "/memories/:id", {id:'@_id'}, {
       update: {
         method: 'PATCH',
         transformRequest: function (memory) {
@@ -23,7 +23,17 @@ define([], function () {
         }
       }
     });
+
+    resource.invite = function (memory, email) {
+      return $http.post(API_URL + "/memories/" + memory._id + "/invite", {
+        email: email
+      }).then(function (response) {
+        return response.data;
+      });
+    };
+
+    return resource;
   }
 
-  return ['$resource', 'API_URL', MemoryResource];
+  return ['$resource', '$http', 'API_URL', MemoryResource];
 });

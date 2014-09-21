@@ -1,5 +1,5 @@
 define(function () {
-  function MemoryCtrl($scope, $rootScope, $q, handleLoading, memory, MilestoneResource, MomentResource,
+  function MemoryCtrl($scope, $rootScope, $q, handleLoading, memory, MilestoneResource, MomentResource, MemoryResource,
     timelineEventZipper, uberService) {
     $scope.memory = handleLoading(memory, function (value) {
       $scope.loading = value;
@@ -56,6 +56,7 @@ define(function () {
       $scope.momentFlag = null;
       $scope.moment = {};
       $scope.milestone = {};
+      $scope.invitation = {};
     };
     reset();
 
@@ -108,30 +109,38 @@ define(function () {
         $scope.addingMoment = false;
         reset();
       });
-    }
+    };
 
     $scope.enableMilestoneStartDate = function () {
       $scope.milestone.hasStartDate = true;
       $scope.milestone.startDate = new Date();
       $scope.milestone.startTime = new Date();
-    }
+    };
 
     $scope.disableMilestoneStartDate = function () {
       $scope.milestone.hasStartDate = false;
-    }
+    };
 
     $scope.enableMilestoneEndDate = function () {
       $scope.milestone.hasEndDate = true;
       $scope.milestone.endDate = new Date();
       $scope.milestone.endTime = new Date();
-    }
+    };
 
     $scope.disableMilestoneEndDate = function () {
       $scope.milestone.hasEndDate = false;
-    }
+    };
+
+    $scope.addInvite = function (invitation) {
+      // TODO: error handling
+      MemoryResource.invite($scope.memory, invitation.email)
+        .then(function () {
+          reset();
+        });
+    };
   }
 
-  return ["$scope", "$rootScope", "$q", "handleLoading", "memory", "MilestoneResource", "MomentResource",
+  return ["$scope", "$rootScope", "$q", "handleLoading", "memory", "MilestoneResource", "MomentResource", "MemoryResource",
     "timelineEventZipper", "uberService", MemoryCtrl
   ];
 });
