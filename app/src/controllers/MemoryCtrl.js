@@ -20,9 +20,13 @@ define(function () {
       });
     });
 
-    $scope.newMoment=function(type){
-      $scope.momentFlag = type;
-
+    $scope.momentFlag = null;
+    $scope.newMoment = function(type) {
+      if ($scope.momentFlag === type) {
+        $scope.momentFlag = null;
+      } else {
+        $scope.momentFlag = type;
+      }
     };
 
     $scope.addMoment = function(moment){
@@ -31,7 +35,7 @@ define(function () {
       angular.extend(newMoment, moment);
       angular.extend(newMoment, {memory: memory._id, sharing: "private"});
       newMoment.$save(function(){
-        $scope.momentFlag = false;
+        $scope.momentFlag = null;
         $scope.addingMoment = false;
       });
 

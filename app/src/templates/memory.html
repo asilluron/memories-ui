@@ -1,13 +1,23 @@
 <div class="navbar sub-navbar row">
-  <div class="col-xs-3"><a href="" class="add-memory__link"><i fa="2x pencil-square-o"></i></a></div>
-  <div class="col-xs-3"><a href="" class="add-memory__link" ng-click="newMoment('photo')"><i fa="2x camera"></i></a></div>
+  <div class="col-xs-3"><a href="" class="add-memory__link" ng-click="newMoment('message')" ng-class="{active:momentFlag==='message'}"><i fa="2x pencil-square-o"></i></a></div>
+  <div class="col-xs-3"><a href="" class="add-memory__link" ng-click="newMoment('photo')" ng-class="{active:momentFlag==='photo'}"><i fa="2x camera"></i></a></div>
   <div class="col-xs-3"><a href="" class="add-memory__link"><i fa="2x flag"></i></a></div>
   <div class="col-xs-3"><a href="" class="add-memory__link"><i fa="2x user"></i></a></div>
+</div>
+<div class="container" ng-if="momentFlag=='message'">
+    <div class="row">
+        <div class="col-xs-9">
+          <textarea ng-model="moment.text" class="form-control" placeholder="Write your message"></textarea>
+        </div>
+        <div class="col-xs-3">
+          <button ng-click="addMoment(moment)" class="btn btn-primary btn-lg btn-block" ng-disabled="!moment.text">Post</button>
+        </div>
+    </div>
 </div>
 <div class="container" ng-if="momentFlag=='photo'">
     <div class="row">
         <div class="col-xs-4">
-            <input ng-model="moment.text" type="text" class="form-control" placeholder="Describe your {[{momentFlag}]}">
+            <input ng-model="moment.text" type="text" class="form-control" placeholder="Describe your photo">
         </div>
         <div class="col-xs-2">
             <input ng-model="moment.imageUrl" type="hidden">
@@ -17,7 +27,7 @@
                 <img class="img-thumbnail" ng-src="{[{moment.imageUrl}]}">
         </div>
         <div class="col-xs-3" ng-show="moment.imageUrl">
-            <a ng-click="addMoment(moment)" class="btn btn-primary">Post</a>
+            <button ng-click="addMoment(moment)" class="btn btn-primary btn-lg btn-block">Post</button>
         </div>
     </div>
     <div class="row">
