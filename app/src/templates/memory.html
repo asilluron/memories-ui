@@ -1,8 +1,8 @@
-<div class="navbar sub-navbar">
-    <p class="navbar-text navbar-right"><a class="add-memory__link" ><i fa="2x pencil-square-o"></i></a></p>
-    <p ng-click="newMoment('photo')" class="navbar-text navbar-right"><a class="add-memory__link" ><i fa="2x camera"></i></a></p>
-    <p class="navbar-text navbar-right"><a class="add-memory__link"  ><i fa="2x flag"></i></a></p>
-    <p class="navbar-text navbar-right"><a class="add-memory__link"><i fa="2x user"></i></a></p>
+<div class="navbar sub-navbar row">
+  <div class="col-xs-3"><a href="" class="add-memory__link"><i fa="2x pencil-square-o"></i></a></div>
+  <div class="col-xs-3"><a href="" class="add-memory__link" ng-click="newMoment('photo')"><i fa="2x camera"></i></a></div>
+  <div class="col-xs-3"><a href="" class="add-memory__link"><i fa="2x flag"></i></a></div>
+  <div class="col-xs-3"><a href="" class="add-memory__link"><i fa="2x user"></i></a></div>
 </div>
 <div class="container" ng-if="momentFlag=='photo'">
     <div class="row">
