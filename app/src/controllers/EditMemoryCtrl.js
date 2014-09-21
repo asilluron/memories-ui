@@ -27,11 +27,14 @@ define(function () {
       $scope.loading = value;
     }, function (error) {
       $scope.loadError = error;
+    }, function (memory) {
+      $scope.primaryMoment = memory.about.primaryMoment || (memory.about.primaryMoment = makeEmptyMoment());
     });
-    if (!$scope.memory.about.primaryMoment) {
-      $scope.memory.about.primaryMoment = makeEmptyMoment();
+    if (isNew) {
+      $scope.setTitle('New Memory');
+    } else {
+      $scope.setTitle('Edit Memory');
     }
-    $scope.primaryMoment = $scope.memory.about.primaryMoment;
 
     $scope.SHAREABILITY_DESCRIPTIONS = {
       "private": "Your memory cannot be seen by anyone but participants of the memory.",

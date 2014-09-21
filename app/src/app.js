@@ -60,12 +60,8 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
         })
         .state('memories.add', {
           url: "/new",
-          views: {
-            "main": {
-              templateUrl: "templates/edit-memory.html",
-              controller: "EditMemoryCtrl"
-            }
-          },
+          templateUrl: "templates/edit-memory.html",
+          controller: "EditMemoryCtrl",
           resolve: {
             memory: [
               function () {
@@ -76,12 +72,8 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
         })
         .state('memories.view', {
           url: "/:id",
-          views: {
-            "main": {
-              templateUrl: "templates/memory.html",
-              controller: "MemoryCtrl"
-            }
-          },
+          templateUrl: "templates/memory.html",
+          controller: "MemoryCtrl",
           resolve: {
             memory: resolveMemoryByStateParam('id')
           }

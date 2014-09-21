@@ -34,11 +34,14 @@ define('src/controllers/EditMemoryCtrl',[],function () {
       $scope.loading = value;
     }, function (error) {
       $scope.loadError = error;
+    }, function (memory) {
+      $scope.primaryMoment = memory.about.primaryMoment || (memory.about.primaryMoment = makeEmptyMoment());
     });
-    if (!$scope.memory.about.primaryMoment) {
-      $scope.memory.about.primaryMoment = makeEmptyMoment();
+    if (isNew) {
+      $scope.setTitle('New Memory');
+    } else {
+      $scope.setTitle('Edit Memory');
     }
-    $scope.primaryMoment = $scope.memory.about.primaryMoment;
 
     $scope.SHAREABILITY_DESCRIPTIONS = {
       "private": "Your memory cannot be seen by anyone but participants of the memory.",
@@ -221,16 +224,17 @@ define('src/providers/MemoryResource',[], function () {
 });
 define('src/providers/handleLoading',[], function () {
   function handleLoading() {
-    return function (model, setLoading, setError) {
+    return function (model, setLoading, setError, onLoaded) {
       setError(null);
       var promise = model && model.$promise;
       if (promise != null) {
         setLoading(true);
-        promise.then(null, setError).finally(function () {
+        promise.then(onLoaded, setError).finally(function () {
           setLoading(false);
         });
       } else {
         setLoading(false);
+        onLoaded(model);
       }
       return model;
     };
@@ -600,12 +604,8 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
         })
         .state('memories.add', {
           url: "/new",
-          views: {
-            "main": {
-              templateUrl: "templates/edit-memory.html",
-              controller: "EditMemoryCtrl"
-            }
-          },
+          templateUrl: "templates/edit-memory.html",
+          controller: "EditMemoryCtrl",
           resolve: {
             memory: [
               function () {
@@ -616,12 +616,8 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
         })
         .state('memories.view', {
           url: "/:id",
-          views: {
-            "main": {
-              templateUrl: "templates/memory.html",
-              controller: "MemoryCtrl"
-            }
-          },
+          templateUrl: "templates/memory.html",
+          controller: "MemoryCtrl",
           resolve: {
             memory: resolveMemoryByStateParam('id')
           }
