@@ -2,9 +2,10 @@
 define('src/config',[],function () {
   
   return {
-    API_URL: "http://localhost:8700",
+    API_URL: "http://memories-api.herokuapp.com",
   };
 });
+
 define('src/controllers/HomeCtrl',[],function () {
   function HomeCtrl($scope, $http, $cookies, $state, API_URL) {
     $scope.user = {
