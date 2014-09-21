@@ -12,8 +12,10 @@ define(function () {
       password: "",
       confirmPassword: ""
     };
+    $scope.pending = false;
     $scope.error = null;
     $scope.login = function () {
+      $scope.pending = true;
       $scope.error = null;
       $http.post("/login", $scope.user)
         .then(function (value) {
@@ -21,11 +23,14 @@ define(function () {
           $state.go('memories');
         }, function (error) {
           $scope.error = error;
+        }).finally(function () {
+          $scope.pending = false;
         });
     };
 
     $scope.successfullyRegistered = false;
     $scope.register = function () {
+      $scope.pending = false;
       $scope.error = null;
       var user = $scope.registerUser;
       $http.post(API_URL + "/user", {
@@ -39,6 +44,8 @@ define(function () {
           $scope.changeToLogin();
         }, function (error) {
           $scope.error = error;
+        }).finally(function () {
+          $scope.pending = false;
         });
     }
 

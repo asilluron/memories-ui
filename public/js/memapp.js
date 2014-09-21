@@ -20,8 +20,10 @@ define('src/controllers/HomeCtrl',[],function () {
       password: "",
       confirmPassword: ""
     };
+    $scope.pending = false;
     $scope.error = null;
     $scope.login = function () {
+      $scope.pending = true;
       $scope.error = null;
       $http.post("/login", $scope.user)
         .then(function (value) {
@@ -29,11 +31,14 @@ define('src/controllers/HomeCtrl',[],function () {
           $state.go('memories');
         }, function (error) {
           $scope.error = error;
+        }).finally(function () {
+          $scope.pending = false;
         });
     };
 
     $scope.successfullyRegistered = false;
     $scope.register = function () {
+      $scope.pending = false;
       $scope.error = null;
       var user = $scope.registerUser;
       $http.post(API_URL + "/user", {
@@ -47,6 +52,8 @@ define('src/controllers/HomeCtrl',[],function () {
           $scope.changeToLogin();
         }, function (error) {
           $scope.error = error;
+        }).finally(function () {
+          $scope.pending = false;
         });
     }
 
@@ -331,7 +338,7 @@ define('src/controllers/MemoryCtrl',[],function () {
   ];
 });
 define('src/controllers/RootCtrl',[],function () {
-  function RootCtrl($scope, $state, $window, UserResource) {
+  function RootCtrl($scope, $state, $window, $cookies, UserResource) {
 
     if ($window.navigator.geolocation) {
       $window.navigator.geolocation.getCurrentPosition(function (position) {
@@ -370,8 +377,14 @@ define('src/controllers/RootCtrl',[],function () {
         $scope.title.shift();
       });
     };
+
+    $scope.logout = function () {
+      delete $cookies.jwt;
+      $state.go('home');
+    }
+
   }
-  return ["$scope", "$state", "$window", "UserResource", RootCtrl];
+  return ["$scope", "$state", "$window", "$cookies", "UserResource", RootCtrl];
 });
 
 define('src/controllers/ChatCtrl',[],function () {
