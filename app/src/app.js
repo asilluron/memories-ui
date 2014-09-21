@@ -35,35 +35,50 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
       $urlRouterProvider.otherwise("/");
 
       var resolveMemoryByStateParam = function (paramName) {
-return ['$stateParams', 'MemoryResource',
-              function ($stateParams, MemoryResource) {
-                return MemoryResource.get({
-                  id: $stateParams[paramName]
-                });
-              }
-            ]
+        return ['$stateParams', 'MemoryResource',
+          function ($stateParams, MemoryResource) {
+            return MemoryResource.get({
+              id: $stateParams[paramName]
+            });
+          }
+        ]
       };
 
       $stateProvider
         .state('memories', {
           url: "/memories",
-          templateUrl: "templates/memories.html",
-          controller: "MemoriesCtrl"
+          views: {
+            "main": {
+              templateUrl: "templates/memories.html",
+              controller: "MemoriesCtrl"
+            }
+          }
+
         })
         .state('memories.add', {
           url: "/new",
-          templateUrl: "templates/edit-memory.html",
-          controller: "EditMemoryCtrl",
+          views: {
+            "main": {
+              templateUrl: "templates/edit-memory.html",
+              controller: "EditMemoryCtrl"
+            }
+          },
           resolve: {
-            memory: [function () {
-              return null;
-            }]
+            memory: [
+              function () {
+                return null;
+              }
+            ]
           }
         })
         .state('memories.view', {
           url: "/:id",
-          templateUrl: "templates/memory.html",
-          controller: "MemoryCtrl",
+          views: {
+            "main": {
+              templateUrl: "templates/memory.html",
+              controller: "MemoryCtrl"
+            }
+          },
           resolve: {
             memory: resolveMemoryByStateParam('id')
           }
