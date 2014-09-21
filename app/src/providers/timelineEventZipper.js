@@ -50,8 +50,23 @@ define([], function(){
     var milestoneToEvent = function (milestone) {
       return makeEvent('milestone', milestone, getEventDate(milestone));
     };
+    var removeMilestonePrimaryMoments = function (moments, milestones) {
+      var primaryMomentIds = milestones
+        .map(function (milestone) {
+          return ((milestone.about || {}).primaryMoment || {})._id || null;
+        })
+        .filter(function (id) {
+          return id;
+        });
+      return moments
+        .filter(function (moment) {
+          return primaryMomentIds.indexOf(moment._id) === -1;
+        });
+    };
     var zip = function (moments, milestones, descending) {
-      var events = moments.map(momentToEvent).concat(milestones.map(milestoneToEvent));
+      var filteredMoments = removeMilestonePrimaryMoments(moments, milestones);
+      var events = filteredMoments.map(momentToEvent)
+        .concat(milestones.map(milestoneToEvent));
       sortByDate(events);
       if (descending) {
         events.reverse();
