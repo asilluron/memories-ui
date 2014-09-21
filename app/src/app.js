@@ -41,7 +41,7 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
               id: $stateParams[paramName]
             });
           }
-        ]
+        ];
       };
 
       $stateProvider
@@ -51,6 +51,9 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
             "main": {
               templateUrl: "templates/memories.html",
               controller: "MemoriesCtrl"
+            },
+            "header": {
+              templateUrl: "templates/actionbars/memories.html"
             }
           }
 
