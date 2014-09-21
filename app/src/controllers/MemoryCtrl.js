@@ -15,7 +15,6 @@ define(function () {
       });
 
       $scope.moments.$promise.then(function () {
-        debugger;
         $scope.timelineEvents = timelineEventZipper.zip($scope.moments, null, true);
       });
     });
