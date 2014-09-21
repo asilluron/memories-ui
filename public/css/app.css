@@ -11576,7 +11576,7 @@ body {
 
 .memory-summary {
   position: relative;
-  min-height: 10em;
+  min-height: 13em;
   margin: 0 0.5em 0 0.5em;
   padding: 1em; }
 
@@ -11584,6 +11584,12 @@ body {
   position: absolute;
   bottom: 1em;
   right: 1em; }
+
+.participants__participant-list {
+  width: 10em; }
+
+.memory-title {
+  font-size: 2em; }
 
 .radio-selected {
   color: #5bc0de; }
@@ -11593,6 +11599,10 @@ label {
 
 .wrapping-label {
   display: block; }
+
+.secondary-text {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 300; }
 
 .help-block {
   color: white; }
