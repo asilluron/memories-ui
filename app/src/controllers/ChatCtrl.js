@@ -1,26 +1,43 @@
 define(function () {
   function ChatCtrl($scope, memory, socketFactoryFactory) {
-   $scope.messages = [];
+    $scope.currentChatMessage = "";
+    $scope.chatMessages = [{message: "woo!", user: "testUser"}];
+    this.socket = {};
+    memory.$promise.then(function (result) {
+      $scope.chatSocket = result.chatSocket = socketFactoryFactory(result._id);
+      
+      socketFactoryFactory(result._id).emit("nameReg", {
+        name: $scope.user.preferredName
+      });
 
-   memory.$promise.then(function(result){
-       $scope.chatSocket = socketFactoryFactory(result._id);
+      socketFactoryFactory(result._id).on("handShake", function () {
+        $scope.chatSocket.emit("nameReg", {
+          name: $scope.user.preferredName
+        });
+        socketFactoryFactory(result._id).emit("chatMessage", {text: "HELLO"});
+      });
 
-       $scope.chatSocket.join("chat");
-       $scope.chatSocket.emit("nameReg", {name: $scope.user.preferredName});
 
-       $scope.chatSocket.on("handShake", function(){
-         $scope.chatSocket.emit("nameReg", {name: $scope.user.preferredName});
-       });
-
-       $scope.chatSocket.on("chatMessage", function storeChatMessage(data){
+      socketFactoryFactory(result._id).on("chatMessage", function storeChatMessage(data) {
         $scope.messages.push(data);
-       });
+      });
 
-       $scope.sendMessage = function sendMessage(message){
-        $scope.chatSocket.emit("chatMessage", {text: message});
-   };
-   });
+      
+    });
 
+    $scope.sendMessage = function addMessage(){
+      if( $scope.currentChatMessage !== ""){
+        $scope.chatMessages.push({message: $scope.currentChatMessage, user: "Me!"});
+        $scope.chatSocket.emit("chatMessage", {
+          text: $scope.currentChatMessage
+        });
+        $scope.currentChatMessage = "";
+      }
+    };
+
+    $scope.openMessage = function openMessage(index){
+      $scope.currentChatMessage = $scope.chatMessages[index];
+    };
 
   }
 

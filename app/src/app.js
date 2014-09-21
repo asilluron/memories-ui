@@ -9,6 +9,7 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
     "ui.bootstrap"
   ])
     .constant("API_URL", config.API_URL)
+ 	.constant("UBER_TOKEN", "O_Y-SG2M2PpzCh0UMjjtYRu99CsKDrlMbOTNTTuH")
     .config(function ($httpProvider) {
       $httpProvider.interceptors.push(['$cookies', function ($cookies) {
         return {

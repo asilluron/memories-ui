@@ -1,6 +1,6 @@
 define(function () {
   function MemoryCtrl($scope, $rootScope, $q, handleLoading, memory, MilestoneResource, MomentResource,
-    timelineEventZipper) {
+    timelineEventZipper, uberService) {
     $scope.memory = handleLoading(memory, function (value) {
       $scope.loading = value;
     }, function (error) {
@@ -129,6 +129,6 @@ define(function () {
   }
 
   return ["$scope", "$rootScope", "$q", "handleLoading", "memory", "MilestoneResource", "MomentResource",
-    "timelineEventZipper", MemoryCtrl
+    "timelineEventZipper", "uberService", MemoryCtrl
   ];
 });

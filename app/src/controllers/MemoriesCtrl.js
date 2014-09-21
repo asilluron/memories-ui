@@ -14,13 +14,12 @@ define(function () {
         socket.emit("handShake", {data: "TEST"});
         socket.on("milestone", function (msg) {
           $rootScope.$emit("TIMELINE:REFRESH");
-          console.log("new milestone action!", msg);
         });
         socket.on("user", function (msg) {
           console.log("new user action completed!");
         });
         socket.on("moment", function (msg) {
-          console.log("new moment action!");
+          $rootScope.$emit("TIMELINE:REFRESH");
         });
         socket.on("edit", function (msg) {
           console.log("new edit to this memory");
