@@ -1047,7 +1047,13 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
           return removeTrailingSlash(url.substring(0, queryIndex), url.substring(queryIndex));
         }
       });
-      $urlRouterProvider.otherwise("/memories");
+      $urlRouterProvider.otherwise(function () {
+        if (('' + document.cookie).indexOf('jwt=') !== -1) {
+          return "/memories";
+        } else {
+          return "/";
+        }
+      });
 
       var resolveMemoryByStateParam = function (paramName) {
         return ['$stateParams', 'MemoryResource',
