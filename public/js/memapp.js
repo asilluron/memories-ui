@@ -89,7 +89,7 @@ define('src/controllers/EditMemoryCtrl',[],function () {
   return ["$scope", "$state", "handleLoading", "memory", "MemoryResource", EditMemoryCtrl];
 });
 define('src/controllers/MemoriesCtrl',[],function () {
-  function MemoriesCtrl($scope, handleLoading, MemoryResource, socketFactoryFactory, UserResource) {
+  function MemoriesCtrl($scope, $rootScope, handleLoading, MemoryResource, socketFactoryFactory, UserResource) {
     $scope.memories = handleLoading(MemoryResource.query(), function (value) {
       $scope.loading = value;
     }, function (error) {
@@ -103,6 +103,7 @@ define('src/controllers/MemoriesCtrl',[],function () {
         });
         socket.emit("handShake", {data: "TEST"});
         socket.on("milestone", function (msg) {
+          $rootScope.$emit("TIMELINE:REFRESH");
           console.log("new milestone action!", msg);
         });
         socket.on("user", function (msg) {
@@ -117,12 +118,13 @@ define('src/controllers/MemoriesCtrl',[],function () {
       });
     });
   }
-  return ["$scope", "handleLoading", "MemoryResource", "socketFactoryFactory", "UserResource", MemoriesCtrl];
+  return ["$scope", "$rootScope", "handleLoading", "MemoryResource", "socketFactoryFactory", "UserResource", MemoriesCtrl];
 });
   
 
 define('src/controllers/MemoryCtrl',[],function () {
-  function MemoryCtrl($scope, $q, handleLoading, memory, MilestoneResource, MomentResource, timelineEventZipper) {
+  function MemoryCtrl($scope, $rootScope, $q, handleLoading, memory, MilestoneResource, MomentResource,
+    timelineEventZipper) {
     $scope.memory = handleLoading(memory, function (value) {
       $scope.loading = value;
     }, function (error) {
@@ -131,24 +133,48 @@ define('src/controllers/MemoryCtrl',[],function () {
     $scope.timelineEvents = [];
     $scope.memory.$promise.then(function (memory) {
       $scope.setTitle(memory.about.name);
-      var moments = handleLoading(MomentResource.query({id:memory._id}), function (value) {
+      var moments = handleLoading(MomentResource.query({
+        id: memory._id
+      }), function (value) {
         $scope.loadingMoments = value;
       }, function (error) {
         $scope.loadMomentsError = error;
       });
 
-      var milestones = handleLoading(MilestoneResource.query({id:memory._id}), function (value) {
+      var milestones = handleLoading(MilestoneResource.query({
+        id: memory._id
+      }), function (value) {
         $scope.loadingMilestones = value;
       }, function (error) {
         $scope.loadMilestonesError = error;
       });
 
-      $q.all([moments.$promise, milestones.$promise]).then(function () {
-        $scope.timelineEvents = timelineEventZipper.zip(moments, milestones, true);
-      });
-
-      $scope.milestones
+      $q.all([moments.$promise, milestones.$promise])
+        .then(function () {
+          $scope.timelineEvents = timelineEventZipper.zip(moments, milestones, true);
+        });
     });
+
+    $scope.refresh = function refresh() {
+      $scope.memory.$promise.then(function (memory) {
+        $q.all({
+          milestones: MilestoneResource.query({
+            id: memory._id
+          }).$promise,
+          moments: MomentResource.query({
+            id: memory._id
+          }).$promise
+        })
+          .then(function (o) {
+            $scope.timelineEvents = timelineEventZipper.zip(o.moments, o.milestones, true);
+          });
+      });
+    };
+
+    $rootScope.$on("TIMELINE:REFRESH", function () {
+      $scope.refresh();
+    });
+
 
     var reset = function () {
       $scope.momentFlag = null;
@@ -157,7 +183,7 @@ define('src/controllers/MemoryCtrl',[],function () {
     };
     reset();
 
-    $scope.newMoment = function(type) {
+    $scope.newMoment = function (type) {
       if ($scope.momentFlag === type) {
         $scope.momentFlag = null;
       } else {
@@ -167,15 +193,19 @@ define('src/controllers/MemoryCtrl',[],function () {
 
     var makeMomentResource = function (moment) {
       var newMoment = new MomentResource();
-      angular.extend(newMoment, moment, {memory: memory._id, sharing: "private"});
+      angular.extend(newMoment, moment, {
+        memory: memory._id,
+        sharing: "private"
+      });
       return newMoment;
     };
-    $scope.addMoment = function(moment){
+    $scope.addMoment = function (moment) {
       $scope.addingMoment = true;
-      makeMomentResource(moment).$save(function(){
-        $scope.addingMoment = false;
-        reset();
-      });
+      makeMomentResource(moment)
+        .$save(function () {
+          $scope.addingMoment = false;
+          reset();
+        });
     };
 
     $scope.addMilestone = function (milestone, moment) {
@@ -191,9 +221,11 @@ define('src/controllers/MemoryCtrl',[],function () {
           desc: ""
         },
         viewability: 'participant',
-        moment: angular.extend({}, moment, {sharing: "private"})
+        moment: angular.extend({}, moment, {
+          sharing: "private"
+        })
       });
-      newMilestone.$save(function(){
+      newMilestone.$save(function () {
         $scope.addingMoment = false;
         reset();
       });
@@ -220,9 +252,10 @@ define('src/controllers/MemoryCtrl',[],function () {
     }
   }
 
-  return ["$scope", "$q", "handleLoading", "memory", "MilestoneResource", "MomentResource", "timelineEventZipper", MemoryCtrl];
+  return ["$scope", "$rootScope", "$q", "handleLoading", "memory", "MilestoneResource", "MomentResource",
+    "timelineEventZipper", MemoryCtrl
+  ];
 });
-
 define('src/controllers/RootCtrl',[],function () {
   function RootCtrl($scope, $state, $window, UserResource) {
 

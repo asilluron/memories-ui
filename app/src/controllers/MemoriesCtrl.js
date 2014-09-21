@@ -1,5 +1,5 @@
 define(function () {
-  function MemoriesCtrl($scope, handleLoading, MemoryResource, socketFactoryFactory, UserResource) {
+  function MemoriesCtrl($scope, $rootScope, handleLoading, MemoryResource, socketFactoryFactory, UserResource) {
     $scope.memories = handleLoading(MemoryResource.query(), function (value) {
       $scope.loading = value;
     }, function (error) {
@@ -13,6 +13,7 @@ define(function () {
         });
         socket.emit("handShake", {data: "TEST"});
         socket.on("milestone", function (msg) {
+          $rootScope.$emit("TIMELINE:REFRESH");
           console.log("new milestone action!", msg);
         });
         socket.on("user", function (msg) {
@@ -27,6 +28,6 @@ define(function () {
       });
     });
   }
-  return ["$scope", "handleLoading", "MemoryResource", "socketFactoryFactory", "UserResource", MemoriesCtrl];
+  return ["$scope", "$rootScope", "handleLoading", "MemoryResource", "socketFactoryFactory", "UserResource", MemoriesCtrl];
 });
   
