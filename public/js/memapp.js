@@ -103,16 +103,34 @@ define('src/controllers/MemoryCtrl',[],function () {
 
   return ["$scope", "handleLoading", "memory", MemoryCtrl];
 });
+define('src/controllers/RootCtrl',[],function () {
+  function RootCtrl($scope, $state) {
+    $scope.$watch(function () {
+      return $state.current;
+    }, function (state) {
+      $scope.currentState = state;
+    });
+
+    $scope.$watch('currentState', function (state) {
+      $scope.sanitizedCurrentStateName = state.name.replace(/\W/g, '-');
+    });
+  }
+  return ["$scope", "$state", RootCtrl];
+});
+  
+
 define('src/controllers',[
     'src/controllers/EditMemoryCtrl',
     'src/controllers/MemoriesCtrl',
-    'src/controllers/MemoryCtrl'
+    'src/controllers/MemoryCtrl',
+    'src/controllers/RootCtrl'
   ],
-  function (EditMemoryCtrl, MemoriesCtrl, MemoryCtrl) {
+  function (EditMemoryCtrl, MemoriesCtrl, MemoryCtrl, RootCtrl) {
     return angular.module("memapp.controllers", [])
       .controller("EditMemoryCtrl", EditMemoryCtrl)
       .controller("MemoriesCtrl", MemoriesCtrl)
-      .controller("MemoryCtrl", MemoryCtrl);
+      .controller("MemoryCtrl", MemoryCtrl)
+      .controller("RootCtrl", RootCtrl);
   });
 /**
  * @module memapp.providers
