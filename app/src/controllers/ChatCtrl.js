@@ -3,32 +3,33 @@ define(function () {
     $scope.currentChatMessage = "";
     $scope.chatMessages = [{message: "woo!", user: "testUser"}];
     this.socket = {};
+
+    var self = this;
     memory.$promise.then(function (result) {
-      $scope.chatSocket = result.chatSocket = socketFactoryFactory(result._id);
+      self.chatSocket = socketFactoryFactory(result._id);
       
       socketFactoryFactory(result._id).emit("nameReg", {
         name: $scope.user.preferredName
       });
 
       socketFactoryFactory(result._id).on("handShake", function () {
-        $scope.chatSocket.emit("nameReg", {
+       self.chatSocket.emit("nameReg", {
           name: $scope.user.preferredName
         });
-        socketFactoryFactory(result._id).emit("chatMessage", {text: "HELLO"});
       });
 
 
-      socketFactoryFactory(result._id).on("chatMessage", function storeChatMessage(data) {
-        $scope.messages.push(data);
+      self.chatSocket.on("chatMessage", function storeChatMessage(data) {
+        $scope.chatMessages.push(data);
       });
 
       
     });
 
-    $scope.sendMessage = function addMessage(){
+    $scope.sendMessage = function sendMessage(){
       if( $scope.currentChatMessage !== ""){
         $scope.chatMessages.push({message: $scope.currentChatMessage, user: "Me!"});
-        $scope.chatSocket.emit("chatMessage", {
+        self.chatSocket.emit("chatMessage", {
           text: $scope.currentChatMessage
         });
         $scope.currentChatMessage = "";
