@@ -18,7 +18,22 @@
       <p><img class="img-rounded" ng-src="{{timelineEvent.value.imageUrl}}"></p>
     </div>
     <div class="event-content" ng-if="timelineEvent.type === 'milestone'">
-      <p>Milestone!</p>
+      <h3 class="milestone-name"><i fa="flag"></i> {{ timelineEvent.value.about.primaryMoment.text }}</h3>
+      <p class="milestone-date" ng-show="timelineEvent.value.startDate || timelineEvent.value.endDate">
+        <div class="date-range" ng-if="memory.startDate || timelineEvent.value.endDate">
+          <span class="date-range-start">
+            <span ng-if="timelineEvent.value.startDate">{{ timelineEvent.value.startDate | date:'mediumDate' }}</span>
+            <span ng-if="!timelineEvent.value.startDate">?</span>
+          </span>
+          <span class="date-range-separator">-</span>
+          <span class="date-range-end">
+            <span ng-if="timelineEvent.value.endDate">{{ timelineEvent.value.endDate | date:'mediumDate' }}</span>
+            <span ng-if="!timelineEvent.value.endDate">?</span>
+          </span>
+        </div>
+      </p>
+      <p ng-show="timelineEvent.value.about.primaryMoment.imageUrl" class="milestone-image"><img class="img-rounded" ng-src="{{timelineEvent.value.about.primaryMoment.imageUrl}}"></p>
+      <!-- <pre>{{ timelineEvent.value|date }}</pre> -->
     </div>
   </div>
 </li>

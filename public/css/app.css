@@ -11447,6 +11447,9 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
   .event__event-content img {
     width: 100%; }
 
+.timeline-event--milestone .milestone-name {
+  font-size: 24px; }
+
 body {
   font-family: 'Muli', sans-serif; }
 
@@ -11640,3 +11643,6 @@ label {
 
 .timepicker {
   background: inherit; }
+
+.milestone-name {
+  margin: 0; }
