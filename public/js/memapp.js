@@ -5,6 +5,68 @@ define('src/config',[],function () {
     API_URL: "http://localhost:8700",
   };
 });
+define('src/controllers/HomeCtrl',[],function () {
+  function HomeCtrl($scope, $http, $cookies, $state, API_URL) {
+    $scope.user = {
+      username: "",
+      password: "",
+      rememberMe: false,
+    };
+    $scope.registerUser = {
+      preferredName: "",
+      email: "",
+      username: "",
+      password: "",
+      confirmPassword: ""
+    };
+    $scope.error = null;
+    $scope.login = function () {
+      $scope.error = null;
+      $http.post("/login", $scope.user)
+        .then(function (value) {
+          $cookies.jwt = value.data.jwt;
+          $state.go('memories');
+        }, function (error) {
+          $scope.error = error;
+        });
+    };
+
+    $scope.successfullyRegistered = false;
+    $scope.register = function () {
+      $scope.error = null;
+      var user = $scope.registerUser;
+      $http.post(API_URL + "/user", {
+        preferredName: user.preferredName,
+        email: user.email,
+        username: user.username,
+        password: user.password,
+      })
+        .then(function (value) {
+          $scope.successfullyRegistered = true;
+          $scope.changeToLogin();
+        }, function (error) {
+          $scope.error = error;
+        });
+    }
+
+    $scope.isSignedIn = function () {
+      return !!$cookies.jwt;
+    };
+    $scope.logout = function () {
+      delete $cookies.jwt;
+    }
+
+    $scope.registering = false;
+    $scope.changeToRegister = function () {
+      $scope.registering = true;
+    }
+    $scope.changeToLogin = function () {
+      $scope.registering = false;
+    }
+  }
+
+  return ["$scope", "$http", "$cookies", "$state", "API_URL", HomeCtrl];
+});
 define('src/controllers/EditMemoryCtrl',[],function () {
   var makeEmptyMoment = function () {
     return {
@@ -329,14 +391,16 @@ define('src/controllers/ChatCtrl',[],function () {
   return ["$scope", "memory", "socketFactoryFactory", ChatCtrl];
 });
 define('src/controllers',[
+    'src/controllers/HomeCtrl',
     'src/controllers/EditMemoryCtrl',
     'src/controllers/MemoriesCtrl',
     'src/controllers/MemoryCtrl',
     'src/controllers/RootCtrl',
     'src/controllers/ChatCtrl'
   ],
-  function (EditMemoryCtrl, MemoriesCtrl, MemoryCtrl, RootCtrl, ChatCtrl) {
+  function (HomeCtrl, EditMemoryCtrl, MemoriesCtrl, MemoryCtrl, RootCtrl, ChatCtrl) {
     return angular.module("memapp.controllers", [])
+      .controller("HomeCtrl", HomeCtrl)
       .controller("EditMemoryCtrl", EditMemoryCtrl)
       .controller("MemoriesCtrl", MemoriesCtrl)
       .controller("MemoryCtrl", MemoryCtrl)
@@ -857,9 +921,17 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
     "ui.bootstrap"
   ])
     .constant("API_URL", config.API_URL)
-    .run(function ($http, $cookies) {
-      var jwt = $cookies.jwt;
-      $http.defaults.headers.common.Authorization = 'Bearer ' + jwt;
+    .config(function ($httpProvider) {
+      $httpProvider.interceptors.push(['$cookies', function ($cookies) {
+        return {
+          request: function (config) {
+            if ($cookies.jwt) {
+              config.headers.Authorization = 'Bearer ' + $cookies.jwt;
+            }
+            return config;
+          }
+        };
+      }]);
     })
     .config(function ($interpolateProvider, $stateProvider, $urlRouterProvider) {
       $interpolateProvider.startSymbol('{[{')
@@ -971,6 +1043,15 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
           url: "/:id/milestone/:milestoneId",
           templateUrl: "templates/milestone.html",
           controller: "MilestoneCtrl"
+        })
+        .state('home', {
+          url: "/",
+          views: {
+            "main": {
+              templateUrl: "templates/home.html",
+              controller: "HomeCtrl"
+            }
+          }
         });
     });
 

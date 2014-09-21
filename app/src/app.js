@@ -9,9 +9,17 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
     "ui.bootstrap"
   ])
     .constant("API_URL", config.API_URL)
-    .run(function ($http, $cookies) {
-      var jwt = $cookies.jwt;
-      $http.defaults.headers.common.Authorization = 'Bearer ' + jwt;
+    .config(function ($httpProvider) {
+      $httpProvider.interceptors.push(['$cookies', function ($cookies) {
+        return {
+          request: function (config) {
+            if ($cookies.jwt) {
+              config.headers.Authorization = 'Bearer ' + $cookies.jwt;
+            }
+            return config;
+          }
+        };
+      }]);
     })
     .config(function ($interpolateProvider, $stateProvider, $urlRouterProvider) {
       $interpolateProvider.startSymbol('{[{')
@@ -123,6 +131,15 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
           url: "/:id/milestone/:milestoneId",
           templateUrl: "templates/milestone.html",
           controller: "MilestoneCtrl"
+        })
+        .state('home', {
+          url: "/",
+          views: {
+            "main": {
+              templateUrl: "templates/home.html",
+              controller: "HomeCtrl"
+            }
+          }
         });
     });
 
