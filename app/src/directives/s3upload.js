@@ -14,8 +14,6 @@ define([], function() {
             },
             link: function(scope, iElement) {
 
-                //var statusElem = iElement.find(".upload_status");
-                var previewElem = iElement.find(".fileupload-preview");
                 var fileElem = iElement.find(".upload_files");
                 fileElem.on("change", uploadFile);
 
@@ -37,8 +35,6 @@ define([], function() {
                             }
                         }).success(function() {
                             scope.url = creds.publicUrl;
-                            previewElem.innerHTML = "<img src='" + creds.publicUrl + "'>";
-
                         });
 
                     });
