@@ -4,7 +4,7 @@ define([], function () {
       products: function () {
         return $http({
           method: 'GET',
-          url: '/v1/products',
+          url: 'https://api.uber.com//v1/products',
           headers: {
             'Authorization': 'Token ' + UBER_TOKEN
           }
@@ -13,7 +13,7 @@ define([], function () {
       price: function (locations) {
         return $http({
           method: 'GET',
-          url: '/v1/estimates/price',
+          url: 'https://api.uber.com//v1/estimates/price',
           headers: {
             'Authorization': 'Token ' + UBER_TOKEN
           },
@@ -26,7 +26,7 @@ define([], function () {
       time: function (locations) {
         return $http({
           method: 'GET',
-          url: '/v1/estimates/time',
+          url: 'https://api.uber.com//v1/estimates/time',
           headers: {
             'Authorization': 'Token ' + UBER_TOKEN
           },
