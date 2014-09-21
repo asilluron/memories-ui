@@ -17,7 +17,10 @@
 		</ul>
 	</div>
 	<div class="date-range" ng-if="memory.startDate || memory.endDate">
-		<span ng-if="memory.startDate">{{ memory.startDate | date }}</span>
-		<span ng-if="memory.endDate">{{ memory.endDate | date }}</span>
+		<span ng-if="memory.startDate">{{ memory.startDate | date:'mediumDate' }}</span>
+		<span ng-if="!memory.startDate">?</span>
+		-
+		<span ng-if="memory.endDate">{{ memory.endDate | date:'mediumDate' }}</span>
+		<span ng-if="!memory.endDate">?</span>
 	</div>
 </div>
