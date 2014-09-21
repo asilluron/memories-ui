@@ -1,0 +1,9 @@
+<div class="memory-container panel" ng-show="currentState.name === 'memories'">
+	<div class="panel-content">
+		<memory-summary ng-repeat="memory in memories" content="memory"></memory-summary>
+	</div>
+</div>
+
+
+
+<section ui-view></section>

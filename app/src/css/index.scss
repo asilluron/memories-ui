@@ -1,5 +1,86 @@
-
-@import '../../vendor/bootstrap-sass-official/assets/stylesheets/_bootstrap';
-@import 'bootswatch/variables';
-@import 'bootswatch/bootswatch';
+//@import '../../vendor/bootstrap-sass-official/assets/stylesheets/_bootstrap';
+@import 'bootswatch/_variables';
+//@import 'bootswatch/_slate-theme';
 @import '../../vendor/font-awesome/scss/font-awesome';
+
+@import '_modules/_event';
+@import '_modules/_timeline';
+@import '_modules/_add-memory';
+@import '_modules/_logo';
+@import '_modules/_nav';
+@import '_modules/_directives';
+
+.radio-selected {
+  color: $brand-info;
+}
+
+label {
+  font-weight: normal;
+}
+
+.wrapping-label {
+  display: block;
+}
+
+.secondary-text {
+	font-family: 'Source Sans Pro', sans-serif;
+	font-weight: 300;
+}
+
+// TODO: probably remove this
+.help-block {
+  color: white;
+}
+
+// this makes the labels white instead of gray, which makes sense for radio or checkbox
+.checkbox, .radio {
+  color: white;
+}
+
+.text-lg {
+  font-size: $font-size-large;
+}
+
+.text-sm {
+  font-size: $font-size-small;
+}
+
+.main-title {
+  text-align: center;
+  margin: 0.25em auto 0;
+  position: absolute;
+  display: inline;
+  top: 0;
+  font-size: 2em;
+  left: 100px;
+  right: 100px;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+.loader {
+  font-size: $font-size-large;
+  text-align: center;
+}
+
+[ui-sref] {
+  cursor: pointer;
+}
+
+.user-message {
+  white-space: pre;
+  white-space: pre-line;
+  white-space: pre-wrap;
+}
+
+.timepicker {
+  background: inherit;
+}
+
+.milestone-name {
+  margin: 0;
+}
+
+location-type-ahead, location-type-ahead input {
+  display: block;
+  width: 100%;
+}

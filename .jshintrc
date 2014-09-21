@@ -61,6 +61,7 @@
     "it": false,
     "expect": false,
     "module": false,
-    "inject": false
+    "inject": false,
+    "io": false
   }
 }

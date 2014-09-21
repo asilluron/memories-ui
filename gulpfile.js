@@ -2,17 +2,19 @@
 
 
 var config = {
-	paths: {
-		src: {
-			scripts: "app/src/**/*.js",
-			styles: "app/src/css/**/*.scss",
-			livereload: ["public/**/*"],
-			vendor: "app/vendor/**"
-		}, 
-		dest: {
-			vendor: "public/vendor"
-		}
-	}
+  paths: {
+    src: {
+      scripts: "app/src/**/*.js",
+      styles: "app/src/css/**/*.scss",
+      livereload: ["public/**/*"],
+      vendor: "app/vendor/**",
+      html: "app/src/templates/**/*.html"
+    },
+    dest: {
+      vendor: "public/vendor",
+      html: "public/templates"
+    }
+  }
 };
 
 var gulp = require('gulp'),
@@ -49,7 +51,7 @@ function handleError(err) {
 }
 
 gulp.task('styles', function () {
-  return gulp.src("./app/src/css/**/*.scss")
+  return gulp.src("./app/src/css/index.scss")
     .pipe(sass()
       .on('error', handleError))
     .pipe(autoprefixer('last 1 version'))
@@ -60,7 +62,7 @@ gulp.task('styles', function () {
 
 gulp.task('html', function () {
   return gulp.src(config.paths.src.html)
-    .pipe(gulp.dest('./public/templates'));
+    .pipe(gulp.dest(config.paths.dest.html));
 });
 
 module.exports = gulp.task('lint', function () {
@@ -70,29 +72,24 @@ module.exports = gulp.task('lint', function () {
 });
 
 
-gulp.task('default', ["lint", "rjs", "styles"],function () {
-	gulp.run("vendor");
- 	gulp.run("watch");
+gulp.task('default', ["lint", "rjs", "styles", "html", "vendor"], function () {
+  gulp.run("watch");
 });
 
-gulp.task('vendor', function(){
-	return gulp.src(config.paths.src.vendor)
-		.pipe(newer(config.paths.dest.vendor))
-		.pipe(gulp.dest(config.paths.dest.vendor));
-});
- 
-gulp.task('rjs', function() {
-    rjs({
-        baseUrl: 'app',
-        out: 'memapp.js',
-        "name": "src/app",
-        "deps": [],
-        "paths": {
-        },
-        "shim": {
-        }
-    })
-        .pipe(gulp.dest('./public/js')); // pipe it to the output DIR
+gulp.task('vendor', function () {
+  return gulp.src(config.paths.src.vendor)
+    .pipe(newer(config.paths.dest.vendor))
+    .pipe(gulp.dest(config.paths.dest.vendor));
 });
 
-
+gulp.task('rjs', function () {
+  rjs({
+    baseUrl: 'app',
+    out: 'memapp.js',
+    "name": "src/app",
+    "deps": [],
+    "paths": {},
+    "shim": {}
+  })
+    .pipe(gulp.dest('./public/js')); // pipe it to the output DIR
+});

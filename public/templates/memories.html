@@ -1,3 +1,12 @@
-<ul>
-  <li ng-repeat="memory in [1, 2, 3]">Memory</li>
-</ul>
+<div class="memory-container panel" ng-show="currentState.name === 'memories'">
+  <loader on="loading" message="Loading your memories" error="loadError">
+  	<div class="panel-content">
+      <memory-summary ng-repeat="memory in memories" content="memory"></memory-summary>
+      <button class="btn btn-primary btn-lg btn-block" ng-if="!memories.length" ui-sref="memories.add">Create your first memory</button>
+  	</div>
+  </loader>
+</div>
+
+
+
+<section ui-view></section>

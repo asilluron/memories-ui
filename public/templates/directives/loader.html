@@ -1,0 +1,9 @@
+<div>
+  <div class="loader" ng-show="on">
+    <i fa="spinner spin"></i> <span ng-bind="message"></span><span ng-bind="dots"></span>
+  </div>
+  <div class="load-error" ng-show="!on && error">
+    Error loading
+  </div>
+  <div ng-show="!on && !error" ng-transclude></div>
+</div>

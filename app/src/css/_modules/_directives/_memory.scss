@@ -1,0 +1,24 @@
+.memory-container{
+	padding: 1em 0 1em 0 ;
+	height: 100%;
+}
+
+.memory-summary{
+	position: relative;
+	min-height: 13em;
+	margin: 0 .5em 1em;
+	padding: 1em;
+}
+
+.participants{
+	position: absolute;
+    bottom: 1em;
+    right: 1em;
+}
+
+.participants__participant-list{
+	width: 10em;
+}
+.memory-title{
+	font-size: 2em;
+}

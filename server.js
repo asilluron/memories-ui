@@ -24,17 +24,17 @@ var options = {
 var server = new hapi.Server(port, options);
 
 //Initial view
-server.route({
-    method: 'GET',
-    path: '/',
-    handler: function(request, reply) {
-        reply.view('index');
-    }
-});
+// server.route({
+//     method: 'GET',
+//     path: '/',
+//     handler: function(request, reply) {
+//         reply.view('index');
+//     }
+// });
 
 server.route({
     method: 'GET',
-    path: '/app',
+    path: '/',
     handler: function(request, reply) {
         reply.view('app');
     }
@@ -56,21 +56,21 @@ server.route({
     method: 'POST',
     path: '/login',
     handler: function(request, reply) {
-        var url = "http://" + request.payload.username + ":" + request.payload.password + "@m" + process.env.API_URL + "/login";
+        var url = "http://" + encodeURIComponent(request.payload.username) + ":" + encodeURIComponent(request.payload.password) + "@" + process.env.API_URL + "/login";
         request_http({
                 url: url
             },
             function(error, response, body) {
                 if (error) {
-                    reply(JSON.stringify(error));
+                    reply(JSON.stringify(error)).code(500);
                 } else {
                     var json = JSON.parse(body);
                     if (json.token) {
-                        reply.redirect("/").state('jwt', json.token, {
-                            encoding: 'none'
-                        });
+                        reply({
+                            jwt: json.token
+                        }).code(201);
                     } else {
-                        reply.view("login");
+                        reply('Bad username or password').code(401);
                     }
 
                 }
@@ -78,6 +78,34 @@ server.route({
         );
     }
 });
+
+//Register route
+// server.route({
+//     method: 'POST',
+//     path: '/register',
+//     handler: function(request, reply) {
+//         var url = "http://" + encodeURIComponent(request.payload.username) + ":" + request.payload.password + "@" + process.env.API_URL + "/login";
+//         request_http({
+//                 url: url
+//             },
+//             function(error, response, body) {
+//                 if (error) {
+//                     reply(JSON.stringify(error));
+//                 } else {
+//                     var json = JSON.parse(body);
+//                     if (json.token) {
+//                         reply.redirect("/").state('jwt', json.token, {
+//                             encoding: 'none'
+//                         });
+//                     } else {
+//                         reply.view("login");
+//                     }
+
+//                 }
+//             }
+//         );
+//     }
+// });
 
 server.start(function() {
     console.log("Hapi server started @ " + server.info.uri);

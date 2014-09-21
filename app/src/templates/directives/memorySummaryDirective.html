@@ -1,0 +1,30 @@
+<div ui-sref="memories.view({id: memory._id})" class="memory-summary well" ng-style="{'background-image': memory.about.primaryMoment.imageUrl && 'url(' + memory.about.primaryMoment.imageUrl + ')'}">
+	<span class="memory-title secondary-text">{{memory.about.name}}</span>
+	<div class="participants">
+
+		<i class="fa fa-users"></i>
+		<ul class="participants__participant-list secondary-text">
+			<li ng-repeat="participant in memory.participants">
+				<span ui-sref="user({id: participant.user._id})">
+					<div ng-switch on="participant.user.gravatar">
+						<img ng-switch-default ng-src="participant.user.gravatar">
+						<i ng-switch-when="undefined" class="fa fa-user"></i>
+						{{participant.user.preferredName}}
+					</div>
+					
+				</span>
+			</li>
+		</ul>
+	</div>
+	<div class="date-range" ng-if="memory.startDate || memory.endDate">
+		<span class="date-range-start">
+			<span ng-if="memory.startDate">{{ memory.startDate | date:'mediumDate' }}</span>
+			<span ng-if="!memory.startDate">?</span>
+		</span>
+		<span class="date-range-separator">-</span>
+		<span class="date-range-end">
+			<span ng-if="memory.endDate">{{ memory.endDate | date:'mediumDate' }}</span>
+			<span ng-if="!memory.endDate">?</span>
+		</span>
+	</div>
+</div>

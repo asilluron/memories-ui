@@ -1,0 +1,62 @@
+<form class="form-horizontal well" role="form" name="memoryForm">
+  <fieldset>
+    <legend>New Memory</legend>
+    <ol class="list-unstyled">
+      <li>
+        <label class="wrapping-label has-feedback" ng-class="{'has-error': memoryForm.name.$dirty && memoryForm.name.$invalid, 'has-success': memoryForm.name.$dirty && memoryForm.name.$valid}">
+          <span class="hidden">Name of your Memory</span>
+          <input type="text" placeholder="Name of your Memory" ng-model="memory.about.name" required class="input-lg form-control" name="name">
+          <i class="form-control-feedback" fa="check lg" ng-if="memoryForm.name.$dirty && memoryForm.name.$valid"></i>
+          <i class="form-control-feedback" fa="times lg" ng-if="memoryForm.name.$dirty && memoryForm.name.$invalid"></i>
+        </label>
+        <div class="help-block" ng-if="memoryForm.name.$dirty">
+          <p ng-show="memoryForm.name.$error.required">You must give your memory a name.</p>
+        </div>
+      </li>
+      <li>
+        <span class="hidden">Shareability</span>
+        <ul class="list-inline">
+          <li><label class="radio"><input type="radio" ng-model="memory.preferences.sharing" value="private" class="hidden"> <i fa="eye-slash lg" ng-class="{'radio-selected': memory.preferences.sharing === 'private'}"></i> Private</label></li>
+          <li><label class="radio"><input type="radio" ng-model="memory.preferences.sharing" value="unlisted" class="hidden"> <i fa="shield lg" ng-class="{'radio-selected': memory.preferences.sharing === 'unlisted'}"></i> Unlisted</label></li>
+          <li><label class="radio"><input type="radio" ng-model="memory.preferences.sharing" value="public" class="hidden"> <i fa="eye lg" ng-class="{'radio-selected': memory.preferences.sharing === 'public'}"></i> Public</label></li>
+        </ul>
+        <span class="help-block" ng-bind="SHAREABILITY_DESCRIPTIONS[memory.preferences.sharing]"></span>
+      </li>
+      <li>
+        <div class="row">
+          <div class="col-sm-6">
+            <span class="hidden">Start Date</span>
+            <p class="input-group">
+              <input type="text" class="form-control" datepicker-popup ng-model="memory.startDate" max-date="memory.endDate" optional close-text="Close" placeholder="When does it start? (optional)" is-open="datePickersOpen.startDate">
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="openDatePicker($event, 'startDate')"><i fa="calendar"></i></button>
+              </span>
+            </p>
+          </div>
+          <div class="col-sm-6">
+            <span class="hidden">End Date</span>
+            <p class="input-group" ng-init="endDateOpen = false">
+              <input type="text" class="form-control" datepicker-popup ng-model="memory.endDate" min-date="memory.startDate" optional close-text="Close" placeholder="When does it end? (optional)" is-open="datePickersOpen.endDate">
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="openDatePicker($event, 'endDate')"><i fa="calendar"></i></button>
+              </span>
+            </p>
+          </div>
+        </div>
+      </li>
+      <li>
+        <label class="wrapping-label">
+          <span class="hidden">Description</span>
+          <textarea class="form-control" ng-model="primaryMoment.text" rows="3" optional placeholder="What is your memory about? (optional)"></textarea>
+        </label>
+      </li>
+      <li class="text-right">
+        <span class="text-danger" ng-if="errorMessage" ng-bind="'Error: ' + errorMessage"></span>
+        <button type="submit" class="btn btn-primary btn-lg" ng-click="create()" ng-disabled="memoryForm.$invalid || creating">
+          <span ng-hide="creating">Create</span>
+          <span ng-show="creating"><i fa="spinner spin"></i> Creating</span>
+        </button>
+      </li>
+    </ol>
+  </fieldset>
+</form>

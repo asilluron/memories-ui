@@ -1,0 +1,71 @@
+<style>
+        body{
+            background-color: #272b30;
+        }
+        .logo{
+            text-align: center;
+            color: #5bc0de;
+            font-family: 'Lora', serif;
+            text-shadow: 2px 2px 2px rgba(0, 0, 0, .6);
+            font-size: 6em;
+            font-weight: 700;
+            letter-spacing: -.015em;
+        }
+        .tagline {
+            text-align: center;
+            color: #5bc0de;
+            font-family: 'Lora', serif;
+            text-shadow: 2px 2px 2px rgba(0, 0, 0, .6);
+            font-size: 2em;
+            font-weight: 400;
+            letter-spacing: -.025em;
+        }
+        .tagline a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .panel{
+            width: 80%;
+            margin: 0 auto;
+            margin-top: 2em;
+        }
+    </style>
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="logo">m.emori.es</div>
+        <div class="tagline"><a href="/">Start making your own m.emori.es</a></div>
+        <div ng-if="isSignedIn()">
+            <h2>You are already signed in</h2>
+            <button class="btn btn-lg btn-primary btn-block" type="submit" ui-sref="memories">Continue to app</button>
+            <button class="btn btn-lg btn-primary btn-block" type="submit" ng-click="logout()">Sign out</button>
+        </div>
+        <form class="form-signin form-group" name="loginForm" ng-submit="login()" ng-if="!isSignedIn() && !registering">
+            <p ng-if="successfullyRegistered">Congratulations, you have successfully registered your account!</p>
+            <h2 class="form-signin-heading">Please sign in</h2>
+            <input name="username" type="text" class="form-control" placeholder="Email address or Username" required autofocus ng-model="user.username">
+            <input name="password" type="password" class="form-control" placeholder="Password" required ng-model="user.password">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" value="remember-me" ng-model="user.rememberMe"> Remember me
+                </label>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" type="submit" ng-disabled="loginForm.$invalid">Sign in</button>
+            <p ng-if="error">There was an error signing in, please try again.</p>
+            <a href="" ng-click="changeToRegister()">Don't have an account? Sign up today!</a>
+        </form>
+        <form class="form-signin form-group" name="registerForm" ng-submit="register()" ng-if="!isSignedIn() && registering">
+            <h2 class="form-signin-heading">Register your account</h2>
+            <input name="preferredName" type="text" class="form-control" placeholder="Preferred name" required autofocus ng-model="registerUser.preferredName">
+            <input name="email" type="email" class="form-control" placeholder="Email address" required autofocus ng-model="registerUser.email">
+            <input name="username" type="text" class="form-control" placeholder="Username" required autofocus ng-model="registerUser.username">
+            <input name="password" type="password" class="form-control" placeholder="Password" required ng-model="registerUser.password">
+            <input name="confirmPassword" type="password" class="form-control" placeholder="Confirm Password" required ng-model="registerUser.confirmPassword">
+            <div ng-if="registerUser.password !== registerUser.confirmPassword">Both passwords must match.</div>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+            <p ng-if="error">There was an error signing in, please try again.</p>
+            <a href="" ng-click="changeToLogin()">Already have an account? Sign in</a>
+        </form>
+    </div>
+</div>

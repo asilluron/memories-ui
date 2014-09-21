@@ -20,6 +20,13 @@ $brand-warning:         #f89406;
 $brand-danger:          #ee5f5b;
 
 
+// weirdness
+$navbar-default-bg:                $gray-dark;
+//** Text muted color
+$text-muted:                  $gray-light;
+
+
+
 //== Scaffolding
 //
 //## Settings for some of the most global styles.
@@ -218,17 +225,17 @@ $dropdown-fallback-border:       $gray-darker;
 //** Divider color for between dropdown items.
 $dropdown-divider-bg:            $gray-darker;
 
+//** Active dropdown menu item text color.
+$dropdown-link-active-color:     #fff;
+//** Active dropdown menu item background color.
+$dropdown-link-active-bg:        $gray-darker;
+
 //** Dropdown link text color.
 $dropdown-link-color:            $text-color;
 //** Hover color for dropdown links.
 $dropdown-link-hover-color:      #fff;
 //** Hover background for dropdown links.
 $dropdown-link-hover-bg:         $dropdown-link-active-bg;
-
-//** Active dropdown menu item text color.
-$dropdown-link-active-color:     #fff;
-//** Active dropdown menu item background color.
-$dropdown-link-active-bg:        $gray-darker;
 
 //** Disabled dropdown menu item background color.
 $dropdown-link-disabled-color:   $text-muted;
@@ -343,7 +350,6 @@ $navbar-padding-vertical:          (($navbar-height - $line-height-computed) / 2
 $navbar-collapse-max-height:       340px;
 
 $navbar-default-color:             $text-color;
-$navbar-default-bg:                $gray-dark;
 $navbar-default-border:            darken($navbar-default-bg, 6.5%);
 
 // Navbar links
@@ -685,13 +691,13 @@ $panel-heading-padding:       10px 15px;
 $panel-footer-padding:        $panel-heading-padding;
 $panel-border-radius:         $border-radius-base;
 
-//** Border color for elements within panels
-$panel-inner-border:          rgba(0, 0, 0, 0.6);
-$panel-footer-bg:             $panel-default-heading-bg;
-
 $panel-default-text:          $text-color;
 $panel-default-border:        rgba(0, 0, 0, 0.6);
 $panel-default-heading-bg:    lighten($body-bg, 10%);
+
+//** Border color for elements within panels
+$panel-inner-border:          rgba(0, 0, 0, 0.6);
+$panel-footer-bg:             $panel-default-heading-bg;
 
 $panel-primary-text:          #fff;
 $panel-primary-border:        $panel-default-border;
@@ -714,6 +720,17 @@ $panel-danger-border:         $panel-default-border;
 $panel-danger-heading-bg:     $state-danger-bg;
 
 
+//== Wells
+//
+//##
+
+$well-bg:                     darken($body-bg, 5%);
+$well-border:                 darken($well-bg, 7%);
+
+.well {
+  background-color: $well-bg;
+}
+
 //== Thumbnails
 //
 //##
@@ -731,14 +748,6 @@ $thumbnail-border-radius:     $border-radius-base;
 $thumbnail-caption-color:     $text-color;
 //** Padding around the thumbnail caption
 $thumbnail-caption-padding:   9px;
-
-
-//== Wells
-//
-//##
-
-$well-bg:                     darken($body-bg, 5%);
-$well-border:                 darken($well-bg, 7%);
 
 
 //== Badges
@@ -824,8 +833,6 @@ $pre-scrollable-max-height:   340px;
 
 //** Horizontal offset for forms and lists.
 $component-offset-horizontal: 180px;
-//** Text muted color
-$text-muted:                  $gray-light;
 //** Abbreviations and acronyms border color
 $abbr-border-color:           $gray-light;
 //** Headings small color

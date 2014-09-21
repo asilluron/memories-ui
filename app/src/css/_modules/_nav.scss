@@ -1,0 +1,17 @@
+.memories__nav{
+	margin-bottom: 0;
+	.logo{
+		font-size: 3em
+	}
+}
+
+
+$sub-navbar__width: 98%;
+$sub-navbar__left: (100% - $add-memory__width)/2;
+
+.sub-navbar{
+	width: $add-memory__width;
+	margin-left: $add-memory__left;
+	border-top: 0;
+	border-radius: 0 0 4px 4px;
+}
