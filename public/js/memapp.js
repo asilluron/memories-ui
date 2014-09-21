@@ -844,7 +844,8 @@ define('src/directives/s3upload',[], function() {
                                     return null;
                                 },
                                 "Content-Type": fileType
-                            }
+                            },
+                            _noAuthorization: true
                         }).success(function() {
                             scope.url = creds.publicUrl;
                         });
@@ -1018,7 +1019,7 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
       $httpProvider.interceptors.push(['$cookies', function ($cookies) {
         return {
           request: function (config) {
-            if ($cookies.jwt) {
+            if ($cookies.jwt && !('Authorization' in config.headers) && !config._noAuthorization) {
               config.headers.Authorization = 'Bearer ' + $cookies.jwt;
             }
             return config;

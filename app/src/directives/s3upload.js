@@ -32,7 +32,8 @@ define([], function() {
                                     return null;
                                 },
                                 "Content-Type": fileType
-                            }
+                            },
+                            _noAuthorization: true
                         }).success(function() {
                             scope.url = creds.publicUrl;
                         });

@@ -14,7 +14,7 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
       $httpProvider.interceptors.push(['$cookies', function ($cookies) {
         return {
           request: function (config) {
-            if ($cookies.jwt) {
+            if ($cookies.jwt && !('Authorization' in config.headers) && !config._noAuthorization) {
               config.headers.Authorization = 'Bearer ' + $cookies.jwt;
             }
             return config;

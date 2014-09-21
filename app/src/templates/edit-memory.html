@@ -49,6 +49,20 @@
           <textarea class="form-control" ng-model="primaryMoment.text" rows="3" optional placeholder="What is your memory about? (optional)"></textarea>
         </label>
       </li>
+      <li>
+        <label class="wrapping-label">
+          <div class="row">
+            <div class="col-md-4">
+              <span>Image (optional):</span>
+              <input ng-model="primaryMoment.imageUrl" type="hidden" required>
+              <s3upload url="primaryMoment.imageUrl"></s3upload>
+            </div>
+            <div class="col-md-8">
+              <img class="img-thumbnail" ng-src="{[{primaryMoment.imageUrl}]}" ng-show="primaryMoment.imageUrl">
+            </div>
+          </div>
+        </label>
+      </li>
       <li class="text-right">
         <span class="text-danger" ng-if="errorMessage" ng-bind="'Error: ' + errorMessage"></span>
         <button type="submit" class="btn btn-primary btn-lg btn-block" ng-click="save()" ng-disabled="memoryForm.$invalid || saving">
