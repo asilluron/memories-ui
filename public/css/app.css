@@ -1700,6 +1700,29 @@ body {
   z-index: 2;
   border-radius: 28px; }
 
+@media only screen and (max-width: 320px) {
+  .timeline-separator {
+    display: none; }
+  .timeline-event {
+    margin: 0;
+    padding: 0;
+    max-width: 100%; }
+  .timeline-info {
+    position: static;
+    margin: 0; }
+  .timeline__timeline-date {
+    position: static;
+    top: 0;
+    left: 0;
+    margin-left: 100px; }
+  .event__event-content {
+    margin: 0;
+    padding: 15px; } }
+
+@media only screen and (max-width: 640px) {
+  .logo {
+    font-size: 5em; } }
+
 .add-memory {
   width: 98%;
   margin-left: 1%;
@@ -1789,7 +1812,10 @@ label {
   font-size: 2em;
   left: 100px;
   right: 100px;
-  font-family: 'Source Sans Pro', sans-serif; }
+  font-family: 'Source Sans Pro', sans-serif;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  height: 1em; }
 
 .loader {
   font-size: 18px;
