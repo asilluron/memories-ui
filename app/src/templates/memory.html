@@ -1,37 +1,85 @@
 <div class="navbar sub-navbar row">
   <div class="col-xs-3"><a href="" class="add-memory__link" ng-click="newMoment('message')" ng-class="{active:momentFlag==='message'}"><i fa="2x pencil-square-o"></i></a></div>
   <div class="col-xs-3"><a href="" class="add-memory__link" ng-click="newMoment('photo')" ng-class="{active:momentFlag==='photo'}"><i fa="2x camera"></i></a></div>
-  <div class="col-xs-3"><a href="" class="add-memory__link"><i fa="2x flag"></i></a></div>
+  <div class="col-xs-3"><a href="" class="add-memory__link" ng-click="newMoment('milestone')" ng-class="{active:momentFlag==='milestone'}"><i fa="2x flag"></i></a></div>
   <div class="col-xs-3"><a href="" class="add-memory__link"><i fa="2x user"></i></a></div>
 </div>
-<div class="container" ng-if="momentFlag=='message'">
-    <div class="row">
+<div class="container-fluid well" ng-if="momentFlag=='message'">
+    <form name="messageForm" class="row">
         <div class="col-xs-9">
-          <textarea ng-model="moment.text" class="form-control" placeholder="Write your message"></textarea>
+          <textarea ng-model="moment.text" class="form-control" placeholder="Write your message" on-return="messageForm.$valid && addMoment(moment)" required></textarea>
         </div>
         <div class="col-xs-3">
-          <button ng-click="addMoment(moment)" class="btn btn-primary btn-lg btn-block" ng-disabled="!moment.text">Post</button>
+          <button ng-click="addMoment(moment)" class="btn btn-primary btn-lg btn-block" ng-disabled="messageForm.$invalid || addingMoment">Post Message</button>
         </div>
-    </div>
+    </form>
 </div>
-<div class="container" ng-if="momentFlag=='photo'">
-    <div class="row">
+<div class="container-fluid well" ng-if="momentFlag=='photo'">
+    <form name="photoForm" class="row">
         <div class="col-xs-4">
             <input ng-model="moment.text" type="text" class="form-control" placeholder="Describe your photo">
         </div>
         <div class="col-xs-2">
-            <input ng-model="moment.imageUrl" type="hidden">
+            <input ng-model="moment.imageUrl" type="hidden" required>
             <s3upload url="moment.imageUrl"></s3upload>
         </div>
-        <div class="col-xs-3" ng-show="moment.imageUrl">
-                <img class="img-thumbnail" ng-src="{[{moment.imageUrl}]}">
+        <div class="col-xs-3">
+            <img class="img-thumbnail" ng-src="{[{moment.imageUrl}]}" ng-show="moment.imageUrl">
         </div>
-        <div class="col-xs-3" ng-show="moment.imageUrl">
-            <button ng-click="addMoment(moment)" class="btn btn-primary btn-lg btn-block">Post</button>
+        <div class="col-xs-3">
+            <button ng-click="addMoment(moment)" class="btn btn-primary btn-lg btn-block" ng-disabled="photoForm.$invalid || addingMoment">Upload Photo</button>
         </div>
-    </div>
-    <div class="row">
-
+    </form>
+</div>
+<div class="container-fluid well" ng-if="momentFlag=='milestone'">
+    <form name="milestormForm" class="row">
+        <div class="col-xs-4">
+            <input ng-model="moment.text" type="text" class="form-control" placeholder="Name your milestone" required><br>
+            <div class="row">
+              <div class="col-sm-6">
+                <span class="hidden">Start Time</span>
+                <p class="input-group">
+                  <a href="" ng-click="enableMilestoneStartDate()" ng-hide="milestone.hasStartDate">Set Start Time</a>
+                  <a href="" ng-click="disableMilestoneStartDate()" ng-show="milestone.hasStartDate">Clear Start Time</a>
+                </p>
+                <p class="input-group" ng-show="milestone.hasStartDate">
+                  <input type="text" class="form-control" datepicker-popup ng-model="milestone.startDate" max-date="milestone.endDate" optional close-text="Close" placeholder="Start" is-open="datePickersOpen.startDate">
+                  <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" ng-click="openDatePicker($event, 'startDate')"><i fa="calendar"></i></button>
+                  </span>
+                </p>
+                <p class="input-group" ng-show="milestone.hasStartDate">
+                  <timepicker ng-model="milestone.startTime" minute-step="15" show-meridian="true" class="timepicker"></timepicker>
+                </p>
+              </div>
+              <div class="col-sm-6">
+                <span class="hidden">End Time</span>
+                <p class="input-group">
+                  <a href="" ng-click="enableMilestoneEndDate()" ng-hide="milestone.hasEndDate">Set End Time</a>
+                  <a href="" ng-click="disableMilestoneEndDate()" ng-show="milestone.hasEndDate">Clear End Time</a>
+                </p>
+                <p class="input-group" ng-show="milestone.hasEndDate">
+                  <input type="text" class="form-control" datepicker-popup ng-model="milestone.endDate" min-date="milestone.startDate" optional close-text="Close" placeholder="End" is-open="datePickersOpen.endDate">
+                  <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" ng-click="openDatePicker($event, 'endDate')"><i fa="calendar"></i></button>
+                  </span>
+                </p>
+                <p class="input-group" ng-show="milestone.hasEndDate">
+                  <timepicker ng-model="milestone.endTime" minute-step="15" show-meridian="true" class="timepicker"></timepicker>
+                </p>
+              </div>
+            </div>
+        </div>
+        <div class="col-xs-2">
+            <input ng-model="moment.imageUrl" type="hidden">
+            Optional: <s3upload url="moment.imageUrl"></s3upload>
+        </div>
+        <div class="col-xs-3">
+            <img class="img-thumbnail" ng-src="{[{moment.imageUrl}]}" ng-show="moment.imageUrl">
+        </div>
+        <div class="col-xs-3">
+            <button ng-click="addMilestone(milestone, moment)" class="btn btn-primary btn-lg btn-block" ng-disabled="milestormForm.$invalid || addingMoment">Create Milestone</button>
+        </div>
     </div>
 </div>
 <loader on="loading" message="Loading memory" error="loadError">

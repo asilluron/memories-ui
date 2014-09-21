@@ -1,5 +1,5 @@
 define(function () {
-  function MemoryCtrl($scope, handleLoading, memory, MomentResource, timelineEventZipper) {
+  function MemoryCtrl($scope, handleLoading, memory, MilestoneResource, MomentResource, timelineEventZipper) {
     $scope.memory = handleLoading(memory, function (value) {
       $scope.loading = value;
     }, function (error) {
@@ -20,6 +20,12 @@ define(function () {
       });
     });
 
+    var reset = function () {
+      $scope.moment = {};
+      $scope.milestone = {};
+    };
+    reset();
+
     $scope.momentFlag = null;
     $scope.newMoment = function(type) {
       if ($scope.momentFlag === type) {
@@ -37,10 +43,42 @@ define(function () {
       newMoment.$save(function(){
         $scope.momentFlag = null;
         $scope.addingMoment = false;
+        reset();
       });
-
     };
+
+    $scope.addMilestone = function (milestone, moment) {
+      $scope.addingMoment = true;
+      var newMoment = new MomentResource();
+      angular.extend(newMoment, moment);
+      angular.extend(newMoment, {memory: memory._id, sharing: "private"});
+      newMoment.$save(function(){
+        $scope.momentFlag = null;
+        $scope.addingMoment = false;
+        reset();
+      });
+    }
+
+    $scope.enableMilestoneStartDate = function () {
+      $scope.milestone.hasStartDate = true;
+      $scope.milestone.startDate = new Date();
+      $scope.milestone.startTime = new Date();
+    }
+
+    $scope.disableMilestoneStartDate = function () {
+      $scope.milestone.hasStartDate = false;
+    }
+
+    $scope.enableMilestoneEndDate = function () {
+      $scope.milestone.hasEndDate = true;
+      $scope.milestone.endDate = new Date();
+      $scope.milestone.endTime = new Date();
+    }
+
+    $scope.disableMilestoneEndDate = function () {
+      $scope.milestone.hasEndDate = false;
+    }
   }
 
-  return ["$scope", "handleLoading", "memory", "MomentResource", "timelineEventZipper", MemoryCtrl];
+  return ["$scope", "handleLoading", "memory", "MilestoneResource", "MomentResource", "timelineEventZipper", MemoryCtrl];
 });

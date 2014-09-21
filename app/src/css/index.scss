@@ -64,3 +64,13 @@ label {
 [ui-sref] {
   cursor: pointer;
 }
+
+.user-message {
+  white-space: pre;
+  white-space: pre-line;
+  white-space: pre-wrap;
+}
+
+.timepicker {
+  background: inherit;
+}

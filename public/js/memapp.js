@@ -119,7 +119,7 @@ define('src/controllers/MemoriesCtrl',[],function () {
   
 
 define('src/controllers/MemoryCtrl',[],function () {
-  function MemoryCtrl($scope, handleLoading, memory, MomentResource, timelineEventZipper) {
+  function MemoryCtrl($scope, handleLoading, memory, MilestoneResource, MomentResource, timelineEventZipper) {
     $scope.memory = handleLoading(memory, function (value) {
       $scope.loading = value;
     }, function (error) {
@@ -140,6 +140,12 @@ define('src/controllers/MemoryCtrl',[],function () {
       });
     });
 
+    var reset = function () {
+      $scope.moment = {};
+      $scope.milestone = {};
+    };
+    reset();
+
     $scope.momentFlag = null;
     $scope.newMoment = function(type) {
       if ($scope.momentFlag === type) {
@@ -157,12 +163,44 @@ define('src/controllers/MemoryCtrl',[],function () {
       newMoment.$save(function(){
         $scope.momentFlag = null;
         $scope.addingMoment = false;
+        reset();
       });
-
     };
+
+    $scope.addMilestone = function (milestone, moment) {
+      $scope.addingMoment = true;
+      var newMoment = new MomentResource();
+      angular.extend(newMoment, moment);
+      angular.extend(newMoment, {memory: memory._id, sharing: "private"});
+      newMoment.$save(function(){
+        $scope.momentFlag = null;
+        $scope.addingMoment = false;
+        reset();
+      });
+    }
+
+    $scope.enableMilestoneStartDate = function () {
+      $scope.milestone.hasStartDate = true;
+      $scope.milestone.startDate = new Date();
+      $scope.milestone.startTime = new Date();
+    }
+
+    $scope.disableMilestoneStartDate = function () {
+      $scope.milestone.hasStartDate = false;
+    }
+
+    $scope.enableMilestoneEndDate = function () {
+      $scope.milestone.hasEndDate = true;
+      $scope.milestone.endDate = new Date();
+      $scope.milestone.endTime = new Date();
+    }
+
+    $scope.disableMilestoneEndDate = function () {
+      $scope.milestone.hasEndDate = false;
+    }
   }
 
-  return ["$scope", "handleLoading", "memory", "MomentResource", "timelineEventZipper", MemoryCtrl];
+  return ["$scope", "handleLoading", "memory", "MilestoneResource", "MomentResource", "timelineEventZipper", MemoryCtrl];
 });
 
 define('src/controllers/RootCtrl',[],function () {
@@ -578,6 +616,21 @@ define('src/directives',['src/directives/actionBarDirective', 'src/directives/me
       }
     ])
     .directive('loader', loader)
+    .directive('onReturn', [function () {
+      return {
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+          element.keyup(function (event) {
+            if ((event.keyCode === 13 || event.which === 13) && !event.altKey && !event.ctrlKey && !event.shiftKey) {
+              scope.$eval(attrs.onReturn);
+              event.preventDefault();
+              event.stopPropagation();
+              return false;
+            }
+          });
+        }
+      };
+    }])
     .directive('s3upload', s3upload)
     .directive('actionBar', actionBarDirective)
     .directive('memoryDetail', memoryDetailDirective)

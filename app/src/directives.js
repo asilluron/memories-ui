@@ -20,6 +20,21 @@ define(['src/directives/actionBarDirective', 'src/directives/memoryDetailDirecti
       }
     ])
     .directive('loader', loader)
+    .directive('onReturn', [function () {
+      return {
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+          element.keyup(function (event) {
+            if ((event.keyCode === 13 || event.which === 13) && !event.altKey && !event.ctrlKey && !event.shiftKey) {
+              scope.$eval(attrs.onReturn);
+              event.preventDefault();
+              event.stopPropagation();
+              return false;
+            }
+          });
+        }
+      };
+    }])
     .directive('s3upload', s3upload)
     .directive('actionBar', actionBarDirective)
     .directive('memoryDetail', memoryDetailDirective)
