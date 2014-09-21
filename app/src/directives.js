@@ -1,9 +1,9 @@
 define(['src/directives/actionBarDirective', 'src/directives/memoryDetailDirective',
   'src/directives/memorySummaryDirective', 'src/directives/momentDetailDirective',
   'src/directives/momentSummaryDirective', 'src/directives/navBarDirective',
-  'src/directives/timelineObjectDirective', 'src/directives/s3upload','src/directives/map', 'src/directives/loader'
+  'src/directives/timelineObjectDirective', 'src/directives/s3upload','src/directives/map', 'src/directives/locationTypeAhead','src/directives/loader'
 ], function (actionBarDirective, memoryDetailDirective, memorySummaryDirective, momentDetailDirective,
-        momentSummaryDirective, navBarDirective, timelineObjectDirective, s3upload, map, loader) {
+        momentSummaryDirective, navBarDirective, timelineObjectDirective, s3upload, map, locationTypeAhead, loader) {
   return angular.module("memapp.directives", ["memapp.providers"])
     .directive('fa', [
 
@@ -37,6 +37,7 @@ define(['src/directives/actionBarDirective', 'src/directives/memoryDetailDirecti
       };
     }])
     .directive('s3upload', s3upload)
+    .directive('locationTypeAhead', locationTypeAhead)
     .directive('actionBar', actionBarDirective)
     .directive('memoryDetail', memoryDetailDirective)
     .directive('memorySummary', memorySummaryDirective)
