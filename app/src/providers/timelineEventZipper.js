@@ -38,7 +38,11 @@ define([], function(){
       };
     };
     var calculateMomentType = function (moment) {
-      return 'text';
+      if (moment.imageUrl) {
+        return 'image';
+      } else {
+        return 'message';
+      }
     };
     var momentToEvent = function (moment) {
       return makeEvent(calculateMomentType(moment), moment, getEventDate(moment));

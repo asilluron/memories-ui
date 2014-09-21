@@ -124,7 +124,8 @@ define('src/controllers/MemoryCtrl',[],function () {
     });
     $scope.moments = [];
     $scope.timelineEvents = [];
-    $scope.memory.$promise.then(function () {
+    $scope.memory.$promise.then(function (memory) {
+      $scope.setTitle(memory.about.name);
       $scope.moments = handleLoading(MomentResource.query({id:memory._id}), function (value) {
         $scope.loadingMoments = value;
       }, function (error) {
@@ -132,7 +133,6 @@ define('src/controllers/MemoryCtrl',[],function () {
       });
 
       $scope.moments.$promise.then(function () {
-        debugger;
         $scope.timelineEvents = timelineEventZipper.zip($scope.moments, null, true);
       });
     });
@@ -151,6 +151,14 @@ define('src/controllers/RootCtrl',[],function () {
     $scope.$watch('currentState', function (state) {
       $scope.sanitizedCurrentStateName = state.name.replace(/\W/g, '-');
     });
+
+    $scope.title = ['m.emori.es'];
+    $scope.setTitle = function (title) {
+      $scope.title.unshift(title);
+      this.$on('$destroy', function () {
+        $scope.title.shift();
+      });
+    }
   }
   return ["$scope", "$state", RootCtrl];
 });
@@ -333,7 +341,11 @@ define('src/providers/timelineEventZipper',[], function(){
       };
     };
     var calculateMomentType = function (moment) {
-      return 'text';
+      if (moment.imageUrl) {
+        return 'image';
+      } else {
+        return 'message';
+      }
     };
     var momentToEvent = function (moment) {
       return makeEvent(calculateMomentType(moment), moment, getEventDate(moment));
@@ -465,8 +477,6 @@ define('src/directives/s3upload',[], function() {
             },
             link: function(scope, iElement) {
 
-                //var statusElem = iElement.find(".upload_status");
-                var previewElem = iElement.find(".fileupload-preview");
                 var fileElem = iElement.find(".upload_files");
                 fileElem.on("change", uploadFile);
 
@@ -488,8 +498,6 @@ define('src/directives/s3upload',[], function() {
                             }
                         }).success(function() {
                             scope.url = creds.publicUrl;
-                            previewElem.innerHTML = "<img src='" + creds.publicUrl + "'>";
-
                         });
 
                     });
@@ -570,35 +578,50 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
       $urlRouterProvider.otherwise("/");
 
       var resolveMemoryByStateParam = function (paramName) {
-return ['$stateParams', 'MemoryResource',
-              function ($stateParams, MemoryResource) {
-                return MemoryResource.get({
-                  id: $stateParams[paramName]
-                });
-              }
-            ]
+        return ['$stateParams', 'MemoryResource',
+          function ($stateParams, MemoryResource) {
+            return MemoryResource.get({
+              id: $stateParams[paramName]
+            });
+          }
+        ]
       };
 
       $stateProvider
         .state('memories', {
           url: "/memories",
-          templateUrl: "templates/memories.html",
-          controller: "MemoriesCtrl"
+          views: {
+            "main": {
+              templateUrl: "templates/memories.html",
+              controller: "MemoriesCtrl"
+            }
+          }
+
         })
         .state('memories.add', {
           url: "/new",
-          templateUrl: "templates/edit-memory.html",
-          controller: "EditMemoryCtrl",
+          views: {
+            "main": {
+              templateUrl: "templates/edit-memory.html",
+              controller: "EditMemoryCtrl"
+            }
+          },
           resolve: {
-            memory: [function () {
-              return null;
-            }]
+            memory: [
+              function () {
+                return null;
+              }
+            ]
           }
         })
         .state('memories.view', {
           url: "/:id",
-          templateUrl: "templates/memory.html",
-          controller: "MemoryCtrl",
+          views: {
+            "main": {
+              templateUrl: "templates/memory.html",
+              controller: "MemoryCtrl"
+            }
+          },
           resolve: {
             memory: resolveMemoryByStateParam('id')
           }

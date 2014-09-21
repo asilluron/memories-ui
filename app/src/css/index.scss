@@ -39,3 +39,13 @@ label {
 .text-sm {
   font-size: $font-size-small;
 }
+
+.main-title {
+  text-align: center;
+  margin: 0.25em auto 0;
+  position: absolute;
+  display: inline;
+  top: 0;
+  left: 100px;
+  right: 100px;
+}

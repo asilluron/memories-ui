@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-controller="RootCtrl">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="/favicon.ico" type="image/vnd.microsoft.icon">
     <link rel="shortcut icon" href="/favicon.ico" type="image/vnd.microsoft.icon">
-    <title>m.emori.es</title>
+    <title ng-bind="title.join(' - ')">m.emori.es</title>
     <link href="//cdnjs.cloudflare.com/ajax/libs/angular-ui/0.4.0/angular-ui.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/slate/bootstrap.min.css" rel="stylesheet">
@@ -16,7 +16,7 @@
     <link href="http://fonts.googleapis.com/css?family=Lora:400,700|Enriqueta:400,700" rel="stylesheet">
     <link href="/css/app.css" rel="stylesheet">
 </head>
-<body class="container state-{[{ sanitizedCurrentStateName }]}" ng-controller="RootCtrl">
+<body class="container state-{[{ sanitizedCurrentStateName }]}">
     <header ui-view="header"></header>
     <section ui-view="main"></section>
     <footer ui-view="footer"></footer>

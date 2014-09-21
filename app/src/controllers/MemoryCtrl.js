@@ -7,7 +7,8 @@ define(function () {
     });
     $scope.moments = [];
     $scope.timelineEvents = [];
-    $scope.memory.$promise.then(function () {
+    $scope.memory.$promise.then(function (memory) {
+      $scope.setTitle(memory.about.name);
       $scope.moments = handleLoading(MomentResource.query({id:memory._id}), function (value) {
         $scope.loadingMoments = value;
       }, function (error) {
