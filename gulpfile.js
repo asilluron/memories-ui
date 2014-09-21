@@ -51,7 +51,7 @@ function handleError(err) {
 }
 
 gulp.task('styles', function () {
-  return gulp.src("./app/src/css/**/*.scss")
+  return gulp.src("./app/src/css/index.scss")
     .pipe(sass()
       .on('error', handleError))
     .pipe(autoprefixer('last 1 version'))
