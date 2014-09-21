@@ -3,7 +3,9 @@
 define([], function(){
   function socketFactoryFactory ($rootScope, API_URL){
     return function socketFactory(context){
-      var socket = io.connect(context ? API_URL + "/" + context : API_URL);
+      //"http:" + API_URL.split(":")[1] + ":8080";
+      var socketAPI = API_URL;
+      var socket = io.connect(context ? socketAPI + "/" + context : socketAPI);
       return {
         on: function (eventName, callback) {
           socket.on(eventName, function () {  

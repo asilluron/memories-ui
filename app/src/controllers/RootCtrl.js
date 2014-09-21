@@ -29,9 +29,7 @@ define(function () {
       $scope.sanitizedCurrentStateName = state.name.replace(/\W/g, '-');
     });
 
-    $scope.user = UserResource.get({}).$promise.then(function(result){
-      console.log($scope.user);
-    });
+    $scope.user = UserResource.get({});
 
     $scope.title = ['m.emori.es'];
     $scope.setTitle = function (title) {

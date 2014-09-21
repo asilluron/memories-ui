@@ -11,6 +11,7 @@ define(function () {
         socket.on("helloWorld", function(data){
           console.log(data);
         });
+        socket.emit("handShake", {data: "TEST"});
         socket.on("milestone", function (msg) {
           console.log("new milestone action!", msg);
         });
