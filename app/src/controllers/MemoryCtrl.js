@@ -1,23 +1,30 @@
 define(function () {
-  function MemoryCtrl($scope, handleLoading, memory, MilestoneResource, MomentResource, timelineEventZipper) {
+  function MemoryCtrl($scope, $q, handleLoading, memory, MilestoneResource, MomentResource, timelineEventZipper) {
     $scope.memory = handleLoading(memory, function (value) {
       $scope.loading = value;
     }, function (error) {
       $scope.loadError = error;
     });
-    $scope.moments = [];
     $scope.timelineEvents = [];
     $scope.memory.$promise.then(function (memory) {
       $scope.setTitle(memory.about.name);
-      $scope.moments = handleLoading(MomentResource.query({id:memory._id}), function (value) {
+      var moments = handleLoading(MomentResource.query({id:memory._id}), function (value) {
         $scope.loadingMoments = value;
       }, function (error) {
         $scope.loadMomentsError = error;
       });
 
-      $scope.moments.$promise.then(function () {
-        $scope.timelineEvents = timelineEventZipper.zip($scope.moments, null, true);
+      var milestones = handleLoading(MilestoneResource.query({id:memory._id}), function (value) {
+        $scope.loadingMilestones = value;
+      }, function (error) {
+        $scope.loadMilestonesError = error;
       });
+
+      $q.all([moments.$promise, milestones.$promise]).then(function () {
+        $scope.timelineEvents = timelineEventZipper.zip(moments, milestones, true);
+      });
+
+      $scope.milestones
     });
 
     var reset = function () {
@@ -90,5 +97,5 @@ define(function () {
     }
   }
 
-  return ["$scope", "handleLoading", "memory", "MilestoneResource", "MomentResource", "timelineEventZipper", MemoryCtrl];
+  return ["$scope", "$q", "handleLoading", "memory", "MilestoneResource", "MomentResource", "timelineEventZipper", MemoryCtrl];
 });

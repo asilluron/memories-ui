@@ -88,7 +88,7 @@
     </div>
 </div>
 <loader on="loading" message="Loading memory" error="loadError">
-<loader on="loadingMoments" message="Loading moments" error="loadMomentsError">
+<loader on="loadingMoments || loadingMilestones" message="Loading moments" error="loadMomentsError || loadMilestonesError">
 <div ng-include="'templates/timeline.html'"></div>
 </loader>
 </loader>
