@@ -1,1 +1,16 @@
-<div> MAKE CHAT NOT WAR </div>
+<div class="chat well">
+  <div class="title">Send a cool chat</div>
+  <form name="chatForm" ng-submit="sendMessage()">
+    <div class="chatWindow well">
+      <div ng-repeat="chatMessage in chatMessages" ng-click="openMessage($index)" ng-class="{me: chatMessage.user === 'Me!'}" class="chatBubble">
+        <div class="author"><span>asd</span></div>
+        <div class="message"><span ng-class="{me: chatMessage.user === 'Me!'}">{[{chatMessage.message}]}</span></div>
+      </div><a id="bottom"></a>
+    </div>
+
+    <div class="input-group">
+      <input type="text" name="chatInput" ng-model="currentChatMessage" class="form-control"/><span class="input-group-btn">
+        <button type="submit" action="submit" class="chatSubmit btn btn-default">Send</button></span>
+    </div>
+  </form>
+</div>

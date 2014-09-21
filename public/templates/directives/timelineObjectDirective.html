@@ -20,7 +20,7 @@
     <div class="event-content" ng-if="timelineEvent.type === 'milestone'">
       <h3 class="milestone-name"><i fa="flag"></i> {{ timelineEvent.value.about.primaryMoment.text }}</h3>
       <p class="milestone-date" ng-if="timelineEvent.value.about.startDate || timelineEvent.value.about.endDate">
-        <div class="date-range">
+        <span class="date-range">
           <span class="date-range-start">
             <span ng-if="timelineEvent.value.about.startDate">{{ timelineEvent.value.about.startDate | date:'medium' }}</span>
             <span ng-if="!timelineEvent.value.about.startDate">?</span>
@@ -30,7 +30,7 @@
             <span ng-if="timelineEvent.value.about.endDate">{{ timelineEvent.value.about.endDate | date:'medium' }}</span>
             <span ng-if="!timelineEvent.value.about.endDate">?</span>
           </span>
-        </div>
+        </span>
       </p>
       <p ng-show="timelineEvent.value.about.primaryMoment.imageUrl" class="milestone-image"><img class="img-rounded" ng-src="{{timelineEvent.value.about.primaryMoment.imageUrl}}"></p>
       <!-- <pre>{{ timelineEvent.value|date }}</pre> -->

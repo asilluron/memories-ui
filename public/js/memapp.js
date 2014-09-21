@@ -166,13 +166,12 @@ define('src/controllers/MemoriesCtrl',[],function () {
         socket.emit("handShake", {data: "TEST"});
         socket.on("milestone", function (msg) {
           $rootScope.$emit("TIMELINE:REFRESH");
-          console.log("new milestone action!", msg);
         });
         socket.on("user", function (msg) {
           console.log("new user action completed!");
         });
         socket.on("moment", function (msg) {
-          console.log("new moment action!");
+          $rootScope.$emit("TIMELINE:REFRESH");
         });
         socket.on("edit", function (msg) {
           console.log("new edit to this memory");
@@ -186,7 +185,7 @@ define('src/controllers/MemoriesCtrl',[],function () {
 
 define('src/controllers/MemoryCtrl',[],function () {
   function MemoryCtrl($scope, $rootScope, $q, handleLoading, memory, MilestoneResource, MomentResource,
-    timelineEventZipper) {
+    timelineEventZipper, uberService) {
     $scope.memory = handleLoading(memory, function (value) {
       $scope.loading = value;
     }, function (error) {
@@ -318,7 +317,7 @@ define('src/controllers/MemoryCtrl',[],function () {
   }
 
   return ["$scope", "$rootScope", "$q", "handleLoading", "memory", "MilestoneResource", "MomentResource",
-    "timelineEventZipper", MemoryCtrl
+    "timelineEventZipper", "uberService", MemoryCtrl
   ];
 });
 define('src/controllers/RootCtrl',[],function () {
@@ -367,27 +366,44 @@ define('src/controllers/RootCtrl',[],function () {
 
 define('src/controllers/ChatCtrl',[],function () {
   function ChatCtrl($scope, memory, socketFactoryFactory) {
-   $scope.messages = [];
+    $scope.currentChatMessage = "";
+    $scope.chatMessages = [{message: "woo!", user: "testUser"}];
+    this.socket = {};
+    memory.$promise.then(function (result) {
+      $scope.chatSocket = result.chatSocket = socketFactoryFactory(result._id);
+      
+      socketFactoryFactory(result._id).emit("nameReg", {
+        name: $scope.user.preferredName
+      });
 
-   memory.$promise.then(function(result){
-       $scope.chatSocket = socketFactoryFactory(result._id);
+      socketFactoryFactory(result._id).on("handShake", function () {
+        $scope.chatSocket.emit("nameReg", {
+          name: $scope.user.preferredName
+        });
+        socketFactoryFactory(result._id).emit("chatMessage", {text: "HELLO"});
+      });
 
-       $scope.chatSocket.join("chat");
-       $scope.chatSocket.emit("nameReg", {name: $scope.user.preferredName});
 
-       $scope.chatSocket.on("handShake", function(){
-         $scope.chatSocket.emit("nameReg", {name: $scope.user.preferredName});
-       });
-
-       $scope.chatSocket.on("chatMessage", function storeChatMessage(data){
+      socketFactoryFactory(result._id).on("chatMessage", function storeChatMessage(data) {
         $scope.messages.push(data);
-       });
+      });
 
-       $scope.sendMessage = function sendMessage(message){
-        $scope.chatSocket.emit("chatMessage", {text: message});
-   };
-   });
+      
+    });
 
+    $scope.sendMessage = function addMessage(){
+      if( $scope.currentChatMessage !== ""){
+        $scope.chatMessages.push({message: $scope.currentChatMessage, user: "Me!"});
+        $scope.chatSocket.emit("chatMessage", {
+          text: $scope.currentChatMessage
+        });
+        $scope.currentChatMessage = "";
+      }
+    };
+
+    $scope.openMessage = function openMessage(index){
+      $scope.currentChatMessage = $scope.chatMessages[index];
+    };
 
   }
 
@@ -481,43 +497,50 @@ define('src/providers/handleLoading',[], function () {
 });
 
 
-define('src/providers/socketFactoryFactory',[], function(){
-  function socketFactoryFactory ($rootScope, API_URL){
-    return function socketFactory(context){
+define('src/providers/socketFactoryFactory',[], function () {
+  function socketFactoryFactory($rootScope, API_URL) {
+    return function socketFactory(context) {
+      var cache = {};
       //"http:" + API_URL.split(":")[1] + ":8080";
       var socketAPI = API_URL;
       var socket = io.connect(context ? socketAPI + "/" + context : socketAPI);
-      return {
-        on: function (eventName, callback) {
-          socket.on(eventName, function () {  
-            var args = arguments;
-            $rootScope.$apply(function () {
-              callback.apply(socket, args);
-            });
-          });
-        },
-        emit: function (eventName, data, callback) {
-          socket.emit(eventName, data, function () {
-            var args = arguments;
-            $rootScope.$apply(function () {
-              if (callback) {
+      if (cache[context]) {
+        return cache[context];
+      } else {
+        var contextSocket =  {
+          on: function (eventName, callback) {
+            socket.on(eventName, function () {
+              var args = arguments;
+              $rootScope.$apply(function () {
                 callback.apply(socket, args);
-              }
+              });
             });
-          });
-        },
-        join: function(room, callback){
-          socket.emit("joinRoom", room, function(){
-            var args = arguments;
-            $rootScope.$apply(function(){
-              if(callback){
-                callback.apply(socket, args);
-              }
+          },
+          emit: function (eventName, data, callback) {
+            socket.emit(eventName, data, function () {
+              var args = arguments;
+              $rootScope.$apply(function () {
+                if (callback) {
+                  callback.apply(socket, args);
+                }
+              });
             });
-          });
-        },
-        socket: socket
-      };
+          },
+          join: function (room, callback) {
+            socket.emit("joinRoom", room, function () {
+              var args = arguments;
+              $rootScope.$apply(function () {
+                if (callback) {
+                  callback.apply(socket, args);
+                }
+              });
+            });
+          },
+          socket: socket
+        };
+        cache[context] = contextSocket;
+        return cache[context];
+      }
     };
   }
 
@@ -629,6 +652,51 @@ define('src/providers/timelineEventZipper',[], function(){
 
   return [timelineEventZipper];
 });
+define('src/providers/uberService',[], function () {
+  function uberService($http, UBER_TOKEN) {
+    return {
+      products: function () {
+        return $http({
+          method: 'GET',
+          url: '/v1/products',
+          headers: {
+            'Authorization': 'Token ' + UBER_TOKEN
+          }
+        });
+      },
+      price: function (locations) {
+        return $http({
+          method: 'GET',
+          url: '/v1/estimates/price',
+          headers: {
+            'Authorization': 'Token ' + UBER_TOKEN
+          },
+          params: {
+          	start_latitude: locations.source.latitude,
+          	start_longitude: locations.source.longitude,
+          }
+        });
+      },
+      time: function (locations) {
+        return $http({
+          method: 'GET',
+          url: '/v1/estimates/time',
+          headers: {
+            'Authorization': 'Token ' + UBER_TOKEN
+          },
+          params: {
+          	start_latitude: locations.source.latitude,
+          	start_longitude: locations.source.longitude,
+          	end_latitude: locations.source.latitude,
+          	end_longtiude: locations.source.longitude
+          }
+        });
+      }
+    };
+  }
+
+  return ['$http', "UBER_TOKEN", uberService];
+});
 define('src/providers',[
   'src/providers/UserResource',
   'src/providers/MemoryResource',
@@ -637,8 +705,9 @@ define('src/providers',[
   'src/providers/socketFactoryFactory',
   'src/providers/MomentFileSigResource',
   'src/providers/MomentResource',
-  'src/providers/timelineEventZipper'
-], function (UserResource, MemoryResource, MilestoneResource, handleLoading, socketFactoryFactory, MomentFileSigResource, MomentResource, timelineEventZipper) {
+  'src/providers/timelineEventZipper',
+  'src/providers/uberService'
+], function (UserResource, MemoryResource, MilestoneResource, handleLoading, socketFactoryFactory, MomentFileSigResource, MomentResource, timelineEventZipper, uberService) {
   return angular.module("memapp.providers", ["ngResource"])
     .factory("MemoryResource", MemoryResource)
     .factory("MilestoneResource", MilestoneResource)
@@ -647,7 +716,8 @@ define('src/providers',[
     .factory("UserResource", UserResource)
     .factory("handleLoading", handleLoading)
     .factory("socketFactoryFactory", socketFactoryFactory)
-    .service("timelineEventZipper", timelineEventZipper);
+    .service("timelineEventZipper", timelineEventZipper)
+    .service("uberService", uberService);
 });
 define('src/directives/actionBarDirective',[], function () {
   function actionBarDirective() {
@@ -924,6 +994,7 @@ define('src/app',['src/config', 'src/controllers', 'src/providers', 'src/directi
     "ui.bootstrap"
   ])
     .constant("API_URL", config.API_URL)
+ 	.constant("UBER_TOKEN", "O_Y-SG2M2PpzCh0UMjjtYRu99CsKDrlMbOTNTTuH")
     .config(function ($httpProvider) {
       $httpProvider.interceptors.push(['$cookies', function ($cookies) {
         return {

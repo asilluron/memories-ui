@@ -2,7 +2,7 @@
   <div class="col-xs-3"><a href="" class="add-memory__link" ng-click="newMoment('message')" ng-class="{active:momentFlag==='message'}"><i fa="2x pencil-square-o"></i></a></div>
   <div class="col-xs-3"><a href="" class="add-memory__link" ng-click="newMoment('photo')" ng-class="{active:momentFlag==='photo'}"><i fa="2x camera"></i></a></div>
   <div class="col-xs-3"><a href="" class="add-memory__link" ng-click="newMoment('milestone')" ng-class="{active:momentFlag==='milestone'}"><i fa="2x flag"></i></a></div>
-  <div class="col-xs-3"><a href="" class="add-memory__link"><i fa="2x user"></i></a></div>
+  <div class="col-xs-3"><a href="" class="add-memory__link" ng-click="newMoment('invite')" ng-class="{active:momentFlag==='invite'}"><i fa="2x user"></i></a></div>
 </div>
 <div class="container-fluid well" ng-if="momentFlag=='message'">
     <form name="messageForm" class="row">
@@ -88,6 +88,9 @@
             <button ng-click="addMilestone(milestone, moment)" class="btn btn-primary btn-lg btn-block" ng-disabled="milestormForm.$invalid || addingMoment">Create Milestone</button>
         </div>
     </div>
+</div>
+<div class="container-fluid well" ng-if="momentFlag=='invite'">
+Rofl
 </div>
 <loader on="loading" message="Loading memory" error="loadError">
 <loader on="loadingMoments || loadingMilestones" message="Loading moments" error="loadMomentsError || loadMilestonesError">
