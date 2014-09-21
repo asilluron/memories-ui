@@ -106,3 +106,36 @@ body{
 	border-radius: 28px;
 }
 
+@media only screen and (max-width: 320px) {
+  .timeline-separator {
+    display: none;
+  }
+
+  .timeline-event {
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+  }
+
+  .timeline-info {
+    position: static;
+    margin: 0;
+  }
+
+  .timeline__timeline-date {
+    position: static;
+    top: 0;
+    left: 0;
+    margin-left: 100px;
+  }
+
+  .event__event-content {
+    margin: 0;
+    padding: 15px;
+  }
+}
+@media only screen and (max-width: 640px) {
+    .logo {
+        font-size: 5em;
+    }
+}

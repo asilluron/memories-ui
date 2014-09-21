@@ -55,6 +55,9 @@ label {
   left: 100px;
   right: 100px;
   font-family: 'Source Sans Pro', sans-serif;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  height: 1em;
 }
 
 .loader {
@@ -84,3 +87,4 @@ location-type-ahead, location-type-ahead input {
   display: block;
   width: 100%;
 }
+
