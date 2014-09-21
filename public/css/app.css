@@ -11622,7 +11622,8 @@ label {
   display: inline;
   top: 0;
   left: 100px;
-  right: 100px; }
+  right: 100px;
+  font-family: 'Lora', serif; }
 
 .loader {
   font-size: 18px;
