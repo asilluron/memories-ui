@@ -10,9 +10,12 @@ $add-memory__left: (100% - $add-memory__width)/2;
 
 .add-memory__link{
 	padding-top: .5em;
-	display:table;
-	margin:0 auto;
+	display: block;
+	text-align: center;
 	.fa-2x{
 		font-size: 1.9em;
+	}
+	&.active {
+		color: $brand-info
 	}
 }

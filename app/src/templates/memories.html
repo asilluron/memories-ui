@@ -1,8 +1,8 @@
 <nav-bar></nav-bar>
 <div class="navbar sub-navbar">
-	<a class="add-memory__link" ng-click="newMemory()"><i class="fa fa-2x fa-plus-circle"></i></a>
+	<a class="add-memory__link" ui-sref='memories.add'><i fa="2x plus-circle"></i></a>
 </div>
-<div class="container">
+<div class="container" ng-show="currentState.name === 'memories'">
 	<memory-summary ng-repeat="memory in memories" content="memory"></memory-summary>
 </div>
 

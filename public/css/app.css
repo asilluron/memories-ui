@@ -11545,10 +11545,12 @@ body {
 
 .add-memory__link {
   padding-top: 0.5em;
-  display: table;
-  margin: 0 auto; }
+  display: block;
+  text-align: center; }
   .add-memory__link .fa-2x {
     font-size: 1.9em; }
+  .add-memory__link.active {
+    color: #5bc0de; }
 
 .logo {
   color: #5bc0de;
