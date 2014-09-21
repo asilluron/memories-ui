@@ -1,10 +1,7 @@
 <div class="timeline">
 	<div class="timeline-body">
-		<div class="timeline-title">
-			{[{memory.about.name}]}
-		</div>
 		<ol class="timeline-events">
-			<li><timeline-object ng-repeat="timelineEvent in timelineEvents"></timeline-object></li>
+			<li ng-repeat="timelineEvent in timelineEvents"><timeline-object></timeline-object></li>
 		</ol>
 	</div>
 </div>

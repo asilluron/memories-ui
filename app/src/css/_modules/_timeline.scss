@@ -19,7 +19,6 @@ body{
   background-color: white;
   position: relative;
   width: 100%;
-  margin-left: 140px;
   height: 100%;
 }
 
@@ -38,7 +37,7 @@ body{
 	padding: 6px 5px;
 	margin: 0 -60px;
 	z-index: 1;
-	border-radius:4px, 4px;
+	border-radius:4px 4px;
 }
 
 .timeline-events {
@@ -106,6 +105,6 @@ body{
 	margin-top: -28px;
 	margin-left: -28px;
 	z-index: 2;
-	border-radius: 28px, 28px;
+	border-radius: 28px;
 }
 
