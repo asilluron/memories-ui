@@ -1,19 +1,5 @@
-<div ng-show="loading">
-  <i fa="spinner spin"></i> Loading memory...
-</div>
-<div ng-show="!loading && loadError">
-  Error loading memory
-</div>
-<div ng-show="!loading && !loadError">
-  Aw shit yeah, I got a memory!
-
-  <div ng-show="loadingMoments">
-    <i fa="spinner spin"></i> Loading moments...
-  </div>
-  <div ng-show="!loadingMoments && loadMomentsError">
-    Error loading moments
-  </div>
-  <div ng-show="!loadingMoments && !loadMomentsError">
+<loader on="loading" message="Loading memory" error="loadError">
+  <loader on="loadingMoments" message="Loading moments" error="loadMomentsError">
     <div ng-include="'templates/timeline.html'"></div>
-  </div>
-</div>
+  </loader>
+</loader>

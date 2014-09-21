@@ -11624,3 +11624,7 @@ label {
   top: 0;
   left: 100px;
   right: 100px; }
+
+.loader {
+  font-size: 18px;
+  text-align: center; }

@@ -1,7 +1,6 @@
-<div class="memory-container panel" ng-show="currentState.name === 'memories'">
-	<memory-summary ng-repeat="memory in memories" content="memory"></memory-summary>
-</div>
-
-
-
+<loader on="loading" message="Loading memories" error="loadError">
+  <div class="memory-container panel" ng-show="currentState.name === 'memories'">
+  	<memory-summary ng-repeat="memory in memories" content="memory"></memory-summary>
+  </div>
+</loader>
 <section ui-view></section>

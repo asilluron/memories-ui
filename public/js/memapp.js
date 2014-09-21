@@ -514,12 +514,32 @@ define('src/directives/s3upload',[], function() {
     return ['$http', 'MomentFileSigResource', 'UserResource', s3upload];
 });
 
+define('src/directives/loader',[], function () {
+  function loader() {
+    return {
+      restrict: 'E',
+      scope: {
+        on: "=",
+        message: "@",
+        error: "=?"
+      },
+      replace: true,
+      transclude: true,
+      templateUrl: 'templates/directives/loader.html',
+      link: function ($scope) {
+        $scope.dots = '...';
+      }
+    }
+  }
+
+  return [loader];
+});
 define('src/directives',['src/directives/actionBarDirective', 'src/directives/memoryDetailDirective',
   'src/directives/memorySummaryDirective', 'src/directives/momentDetailDirective',
   'src/directives/momentSummaryDirective', 'src/directives/navBarDirective',
-  'src/directives/timelineObjectDirective', 'src/directives/s3upload'
+  'src/directives/timelineObjectDirective', 'src/directives/s3upload', 'src/directives/loader'
 ], function (actionBarDirective, memoryDetailDirective, memorySummaryDirective, momentDetailDirective,
-        momentSummaryDirective, navBarDirective, timelineObjectDirective, s3upload) {
+        momentSummaryDirective, navBarDirective, timelineObjectDirective, s3upload, loader) {
   return angular.module("memapp.directives", ["memapp.providers"])
     .directive('fa', [
 
@@ -535,6 +555,7 @@ define('src/directives',['src/directives/actionBarDirective', 'src/directives/me
         };
       }
     ])
+    .directive('loader', loader)
     .directive('s3upload', s3upload)
     .directive('actionBar', actionBarDirective)
     .directive('memoryDetail', memoryDetailDirective)
