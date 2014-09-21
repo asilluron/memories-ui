@@ -1,4 +1,4 @@
-<div ui-sref="memories.view({id: memory._id})" class="memory-summary well" ng-style='{"background-image": memory.about.primaryMoment.imageUrl}'>
+<div ui-sref="memories.view({id: memory._id})" class="memory-summary well" ng-style="{'background-image': memory.about.primaryMoment.imageUrl && 'url(' + memory.about.primaryMoment.imageUrl + ')'}">
 	<span class="memory-title secondary-text">{{memory.about.name}}</span>
 	<div class="participants">
 
