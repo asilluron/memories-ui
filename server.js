@@ -40,6 +40,14 @@ server.route({
     }
 });
 
+server.route({
+    method: 'GET',
+    path: '/login',
+    handler: function(request, reply) {
+        reply.view('login');
+    }
+});
+
 //Serve public files
 server.route({
     method: 'GET',
@@ -56,7 +64,7 @@ server.route({
     method: 'POST',
     path: '/login',
     handler: function(request, reply) {
-        var url = "http://" + request.payload.username + ":" + request.payload.password + "@m" + process.env.API_URL + "/login";
+        var url = "http://" + encodeURIComponent(request.payload.username) + ":" + request.payload.password + "@" + process.env.API_URL + "/login";
         request_http({
                 url: url
             },
