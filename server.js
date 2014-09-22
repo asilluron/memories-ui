@@ -40,6 +40,14 @@ server.route({
     }
 });
 
+server.route({
+    method: 'GET',
+    path: '/v2',
+    handler: function(request, reply) {
+        reply.view('appv2');
+    }
+});
+
 //Serve public files
 server.route({
     method: 'GET',
