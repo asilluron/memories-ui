@@ -35,7 +35,7 @@ var server = new hapi.Server(port, options);
 
 server.route({
     method: 'GET',
-    path: '/',
+    path: '/app',
     handler: function(request, reply) {
         reply.view('app');
     }
@@ -43,11 +43,28 @@ server.route({
 
 server.route({
     method: 'GET',
-    path: '/v2',
+    path: '/',
     handler: function(request, reply) {
-        reply.view('appv2');
+        reply.view('appv2', {size: "large"});
     }
 });
+
+server.route({
+    method: 'GET',
+    path: '/about',
+    handler: function(request, reply) {
+        reply.view('about', {size: "standard"});
+    }
+});
+
+server.route({
+    method: 'GET',
+    path: '/guide',
+    handler: function(request, reply) {
+        reply.view('guide', {size: "standard"});
+    }
+});
+
 
 //Serve public files
 server.route({
