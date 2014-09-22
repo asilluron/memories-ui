@@ -17,7 +17,8 @@ var options = {
             html: require('handlebars')
         },
         basePath: __dirname,
-        path: './views'
+        path: './views',
+        partialsPath: './views/partials'
     }
 };
 
