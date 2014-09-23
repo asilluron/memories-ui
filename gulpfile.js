@@ -59,6 +59,16 @@ gulp.task('styles', function () {
     .pipe(gulp.dest('./public/css'));
 });
 
+gulp.task('stylesv2', function () {
+  return gulp.src("./app/src/css/style.scss")
+    .pipe(sass()
+      .on('error', handleError))
+    .pipe(autoprefixer('last 1 version'))
+    .pipe(rename('style.css'))
+    .pipe(gulp.dest('./public/css'));
+});
+
+
 
 gulp.task('html', function () {
   return gulp.src(config.paths.src.html)
