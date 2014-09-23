@@ -45,7 +45,7 @@ server.route({
     method: 'GET',
     path: '/',
     handler: function(request, reply) {
-        reply.view('appv2', {size: "large"});
+        reply.view('appv2', {size: "large", active: {home: true}});
     }
 });
 
@@ -53,7 +53,7 @@ server.route({
     method: 'GET',
     path: '/about',
     handler: function(request, reply) {
-        reply.view('about', {size: "standard"});
+        reply.view('about', {size: "standard", active: {about: true}});
     }
 });
 
@@ -61,7 +61,7 @@ server.route({
     method: 'GET',
     path: '/guide',
     handler: function(request, reply) {
-        reply.view('guide', {size: "standard"});
+        reply.view('guide', {size: "standard", active: {guide: true}});
     }
 });
 

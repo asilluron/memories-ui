@@ -14,10 +14,10 @@
                 <!-- HEADER MENU : begin -->
                 <nav class="header-menu">
                     <ul>
-                        <li class="m-active"><a href="/">Home</a></li>
-                        <li><a href="/app">Sign In</a></li>
-                        <li><a href="/about">About</a></li>
-                        <li><a href="/guide">Getting Started</a></li>
+                        <li {{#if active.home}}class="m-active"{{/if}}><a href="/">Home</a></li>
+                        <li {{#if active.signin}}class="m-active"{{/if}}><a href="/app">Sign In</a></li>
+                        <li {{#if active.about}}class="m-active"{{/if}}><a href="/about">About</a></li>
+                        <li {{#if active.guide}}class="m-active"{{/if}}><a href="/guide">Getting Started</a></li>
                     </ul>
                 </nav>
                 <!-- HEADER MENU : end -->
