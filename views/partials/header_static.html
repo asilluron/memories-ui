@@ -1,0 +1,32 @@
+<!-- HEADER : begin -->
+<header id="header" class="m-large m-enable-fixed m-fixed-bg">
+    <div class="header-inner">
+        <div class="container">
+            <!-- HEADER CONTENT : begin -->
+            <div class="header-content">
+                <!-- HEADER BRANDING : begin -->
+                <div class="header-branding">
+                    <div class="header-branding-inner">
+                        <a href="/"><img src="images/logo.png"  alt="m.emori.es"></a>
+                    </div>
+                </div>
+                <!-- HEADER BRANDING : end -->
+                <!-- HEADER MENU : begin -->
+                <nav class="header-menu">
+                    <ul>
+                        <li {{#if active.home}}class="m-active"{{/if}}><a href="/">Home</a></li>
+                        <li {{#if active.signin}}class="m-active"{{/if}}><a href="/app">Sign In</a></li>
+                        <li {{#if active.about}}class="m-active"{{/if}}><a href="/about">About</a></li>
+                        <li {{#if active.guide}}class="m-active"{{/if}}><a href="/guide">Getting Started</a></li>
+                    </ul>
+                </nav>
+                <!-- HEADER MENU : end -->
+            </div>
+            <!-- HEADER CONTENT : end -->
+            <!-- MAIN SIDEBAR TOGGLE : begin -->
+            <button class="main-sidebar-toggle" type="button"><i class="fa fa-bars"></i></button>
+            <!-- MAIN SIDEBAR TOGGLE : end -->
+        </div>
+    </div>
+</header>
+<!-- HEADER : end -->

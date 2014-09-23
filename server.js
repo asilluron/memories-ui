@@ -17,7 +17,8 @@ var options = {
             html: require('handlebars')
         },
         basePath: __dirname,
-        path: './views'
+        path: './views',
+        partialsPath: './views/partials'
     }
 };
 
@@ -34,11 +35,36 @@ var server = new hapi.Server(port, options);
 
 server.route({
     method: 'GET',
-    path: '/',
+    path: '/app',
     handler: function(request, reply) {
         reply.view('app');
     }
 });
+
+server.route({
+    method: 'GET',
+    path: '/',
+    handler: function(request, reply) {
+        reply.view('appv2', {size: "large", active: {home: true}});
+    }
+});
+
+server.route({
+    method: 'GET',
+    path: '/about',
+    handler: function(request, reply) {
+        reply.view('about', {size: "standard", active: {about: true}});
+    }
+});
+
+server.route({
+    method: 'GET',
+    path: '/guide',
+    handler: function(request, reply) {
+        reply.view('guide', {size: "standard", active: {guide: true}});
+    }
+});
+
 
 //Serve public files
 server.route({
