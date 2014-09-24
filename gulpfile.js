@@ -92,10 +92,22 @@ gulp.task('vendor', function () {
     .pipe(gulp.dest(config.paths.dest.vendor));
 });
 
-gulp.task('rjs', function () {
+gulp.task('deploy', function () {
   rjs({
     baseUrl: 'app',
     out: 'memapp.js',
+    "name": "src/base",
+    "deps": [],
+    "paths": {},
+    "shim": {}
+  })
+    .pipe(gulp.dest('./public/js')); // pipe it to the output DIR
+});
+
+gulp.task('rjs', function () {
+  rjs({
+    baseUrl: 'app',
+    out: 'app.js',
     "name": "src/app",
     "deps": [],
     "paths": {},

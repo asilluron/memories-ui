@@ -1,4 +1,11 @@
 
+define('src/config',[],function () {
+  
+  return {
+    API_URL: "http://memories-api.herokuapp.com",
+  };
+});
+
 define('src/controllers/HomeCtrl',[],function () {
   function HomeCtrl($scope, $http, $cookies, $state, API_URL) {
     $scope.user = {
@@ -40,7 +47,7 @@ define('src/controllers/HomeCtrl',[],function () {
         username: user.username,
         password: user.password,
       })
-        .then(function () {
+        .then(function (value) {
           $scope.successfullyRegistered = true;
           $scope.changeToLogin();
         }, function (error) {
@@ -48,27 +55,26 @@ define('src/controllers/HomeCtrl',[],function () {
         }).finally(function () {
           $scope.pending = false;
         });
-    };
+    }
 
     $scope.isSignedIn = function () {
       return !!$cookies.jwt;
     };
     $scope.logout = function () {
       delete $cookies.jwt;
-    };
+    }
 
     $scope.registering = false;
     $scope.changeToRegister = function () {
       $scope.registering = true;
-    };
+    }
     $scope.changeToLogin = function () {
       $scope.registering = false;
-    };
+    }
   }
 
   return ["$scope", "$http", "$cookies", "$state", "API_URL", HomeCtrl];
 });
-
 define('src/controllers/EditMemoryCtrl',[],function () {
   var makeEmptyMoment = function () {
     return {
@@ -80,7 +86,7 @@ define('src/controllers/EditMemoryCtrl',[],function () {
       },
       sharing: "private"
     };
-  };
+  }
   function EditMemoryCtrl($scope, $state, handleLoading, memory, MemoryResource) {
     var isNew = $scope.isNew = !memory;
     $scope.memory = handleLoading(memory || {
@@ -152,9 +158,8 @@ define('src/controllers/EditMemoryCtrl',[],function () {
 
   return ["$scope", "$state", "handleLoading", "memory", "MemoryResource", EditMemoryCtrl];
 });
-
 define('src/controllers/MemoriesCtrl',[],function () {
-  function MemoriesCtrl($scope, $rootScope, handleLoading, MemoryResource, socketFactoryFactory) {
+  function MemoriesCtrl($scope, $rootScope, handleLoading, MemoryResource, socketFactoryFactory, UserResource) {
     $scope.memories = handleLoading(MemoryResource.query(), function (value) {
       $scope.loading = value;
     }, function (error) {
@@ -164,27 +169,27 @@ define('src/controllers/MemoriesCtrl',[],function () {
       memories.forEach(function (memory) {
         var socket = memory.socket = socketFactoryFactory(memory._id);
         socket.on("helloWorld", function(data){
-          //console.log(data);
+          console.log(data);
         });
         socket.emit("handShake", {data: "TEST"});
         socket.on("milestone", function (msg) {
           $rootScope.$emit("TIMELINE:REFRESH");
         });
         socket.on("user", function (msg) {
-          //console.log("new user action completed!");
+          console.log("new user action completed!");
         });
         socket.on("moment", function (msg) {
           $rootScope.$emit("TIMELINE:REFRESH");
         });
         socket.on("edit", function (msg) {
-         // console.log("new edit to this memory");
+          console.log("new edit to this memory");
         });
       });
     });
   }
-  return ["$scope", "$rootScope", "handleLoading", "MemoryResource", "socketFactoryFactory", MemoriesCtrl];
+  return ["$scope", "$rootScope", "handleLoading", "MemoryResource", "socketFactoryFactory", "UserResource", MemoriesCtrl];
 });
-
+  
 
 define('src/controllers/MemoryCtrl',[],function () {
   function MemoryCtrl($scope, $rootScope, $q, handleLoading, memory, MilestoneResource, MomentResource, MemoryResource,
@@ -376,7 +381,7 @@ define('src/controllers/RootCtrl',[],function () {
     $scope.logout = function () {
       delete $cookies.jwt;
       $state.go('home');
-    };
+    }
 
   }
   return ["$scope", "$state", "$window", "$cookies", "UserResource", RootCtrl];
@@ -1040,4 +1045,145 @@ define('src/base',['src/controllers', 'src/providers', 'src/directives'], functi
     });
 
   return memApp;
+});
+
+define('src/app',['src/config', 'src/base'], function (config) {
+
+  angular.module("webapp", ["memapp"])
+    .constant("API_URL", config.API_URL)
+    .constant("UBER_TOKEN", "O_Y-SG2M2PpzCh0UMjjtYRu99CsKDrlMbOTNTTuH")
+    .config(function ($interpolateProvider, $stateProvider, $urlRouterProvider) {
+      $interpolateProvider.startSymbol('{[{')
+        .endSymbol('}]}');
+
+      var removeTrailingSlash = function (path, query) {
+        if (path !== '/' && path.charAt(path.length - 1) === '/') {
+          return path.substring(0, path.length - 1) + query;
+        }
+      };
+      $urlRouterProvider.rule(function ($injector, $location) {
+        var url = $location.url();
+
+        var queryIndex = url.indexOf('?');
+        if (queryIndex === -1) {
+          return removeTrailingSlash(url, "");
+        } else {
+          return removeTrailingSlash(url.substring(0, queryIndex), url.substring(queryIndex));
+        }
+      });
+      $urlRouterProvider.otherwise(function () {
+        if (('' + document.cookie)
+          .indexOf('jwt=') !== -1) {
+          return "/memories";
+        } else {
+          return "/";
+        }
+      });
+
+      var resolveMemoryByStateParam = function (paramName) {
+        return ['$stateParams', 'MemoryResource',
+          function ($stateParams, MemoryResource) {
+            return MemoryResource.get({
+              id: $stateParams[paramName]
+            });
+          }
+        ];
+      };
+
+      $stateProvider
+        .state('memories', {
+          url: "/memories",
+          views: {
+            "main": {
+              templateUrl: "templates/memories.html",
+              controller: "MemoriesCtrl"
+            },
+            "header": {
+              templateUrl: "templates/actionbars/memories.html"
+            }
+          }
+
+        })
+        .state('memories.add', {
+          url: "/new",
+          templateUrl: "templates/edit-memory.html",
+          controller: "EditMemoryCtrl",
+          resolve: {
+            memory: [
+
+              function () {
+                return null;
+              }
+            ]
+          }
+        })
+        .state('memories.view', {
+          url: "/:id",
+          templateUrl: "templates/memory.html",
+          controller: "MemoryCtrl",
+          resolve: {
+            memory: resolveMemoryByStateParam('id')
+          }
+        })
+        .state('memories.chat', {
+          url: "/:id/chat",
+          templateUrl: "templates/chat.html",
+          controller: "ChatCtrl",
+          resolve: {
+            memory: resolveMemoryByStateParam('id')
+          }
+        })
+        .state('memories.edit', {
+          url: "/:id/edit",
+          templateUrl: "templates/edit-memory.html",
+          controller: "EditMemoryCtrl",
+          resolve: {
+            memory: resolveMemoryByStateParam('id')
+          }
+        })
+        .state('memories.moment', {
+          url: ":id/facet/:momentId",
+          templateUrl: "templates/moment.html",
+          controller: "MomentCtrl"
+        })
+        .state('user', {
+          url: "/user",
+          templateUrl: "templates/user.html",
+          controller: "UserCtrl"
+        })
+        .state('users', {
+          url: "/users/:id",
+          templateUrl: "templates/user.html",
+          controller: "UserCtrl"
+        })
+        .state('albums', {
+          url: "/albums",
+          templateUrl: "templates/albums.html",
+          controller: "AlbumsCtrl"
+        })
+        .state('albums.view', {
+          url: "/:id",
+          templateUrl: "templates/album.html",
+          controller: "AlbumCtrl"
+        })
+        .state('memories.milestone', {
+          url: "/:id/milestone/:milestoneId",
+          templateUrl: "templates/milestone.html",
+          controller: "MilestoneCtrl"
+        })
+        .state('home', {
+          url: "/",
+          views: {
+            "main": {
+              templateUrl: "templates/home.html",
+              controller: "HomeCtrl"
+            }
+          }
+        });
+    });
+
+  angular.element(document)
+    .ready(function () {
+      angular.bootstrap(document, ['webapp']);
+    });
 });
