@@ -1,27 +1,8 @@
-define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], function (config) {
-  angular.module("memapp", [
-    "memapp.controllers",
-    "memapp.providers",
-    "memapp.directives",
-    "ngCookies",
-    "ui.router",
-    "ui.utils",
-    "ui.bootstrap"
-  ])
+define(['src/config', 'src/base'], function (config) {
+
+  angular.module("webapp", ["memapp"])
     .constant("API_URL", config.API_URL)
- 	.constant("UBER_TOKEN", "O_Y-SG2M2PpzCh0UMjjtYRu99CsKDrlMbOTNTTuH")
-    .config(function ($httpProvider) {
-      $httpProvider.interceptors.push(['$cookies', function ($cookies) {
-        return {
-          request: function (config) {
-            if ($cookies.jwt && !('Authorization' in config.headers) && !config._noAuthorization) {
-              config.headers.Authorization = 'Bearer ' + $cookies.jwt;
-            }
-            return config;
-          }
-        };
-      }]);
-    })
+    .constant("UBER_TOKEN", "O_Y-SG2M2PpzCh0UMjjtYRu99CsKDrlMbOTNTTuH")
     .config(function ($interpolateProvider, $stateProvider, $urlRouterProvider) {
       $interpolateProvider.startSymbol('{[{')
         .endSymbol('}]}');
@@ -42,7 +23,8 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
         }
       });
       $urlRouterProvider.otherwise(function () {
-        if (('' + document.cookie).indexOf('jwt=') !== -1) {
+        if (('' + document.cookie)
+          .indexOf('jwt=') !== -1) {
           return "/memories";
         } else {
           return "/";
@@ -79,6 +61,7 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
           controller: "EditMemoryCtrl",
           resolve: {
             memory: [
+
               function () {
                 return null;
               }
@@ -152,6 +135,6 @@ define(['src/config', 'src/controllers', 'src/providers', 'src/directives'], fun
 
   angular.element(document)
     .ready(function () {
-      angular.bootstrap(document, ['memapp']);
+      angular.bootstrap(document, ['webapp']);
     });
 });

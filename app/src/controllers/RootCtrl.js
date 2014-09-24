@@ -42,7 +42,7 @@ define(function () {
     $scope.logout = function () {
       delete $cookies.jwt;
       $state.go('home');
-    }
+    };
 
   }
   return ["$scope", "$state", "$window", "$cookies", "UserResource", RootCtrl];

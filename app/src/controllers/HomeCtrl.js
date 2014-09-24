@@ -39,7 +39,7 @@ define(function () {
         username: user.username,
         password: user.password,
       })
-        .then(function (value) {
+        .then(function () {
           $scope.successfullyRegistered = true;
           $scope.changeToLogin();
         }, function (error) {
@@ -47,22 +47,22 @@ define(function () {
         }).finally(function () {
           $scope.pending = false;
         });
-    }
+    };
 
     $scope.isSignedIn = function () {
       return !!$cookies.jwt;
     };
     $scope.logout = function () {
       delete $cookies.jwt;
-    }
+    };
 
     $scope.registering = false;
     $scope.changeToRegister = function () {
       $scope.registering = true;
-    }
+    };
     $scope.changeToLogin = function () {
       $scope.registering = false;
-    }
+    };
   }
 
   return ["$scope", "$http", "$cookies", "$state", "API_URL", HomeCtrl];

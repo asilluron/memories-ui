@@ -9,7 +9,7 @@ define(function () {
       },
       sharing: "private"
     };
-  }
+  };
   function EditMemoryCtrl($scope, $state, handleLoading, memory, MemoryResource) {
     var isNew = $scope.isNew = !memory;
     $scope.memory = handleLoading(memory || {
