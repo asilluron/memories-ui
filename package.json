@@ -4,7 +4,7 @@
   "description": "memories ========",
   "main": "server.js",
   "dependencies": {
-    "handlebars": "^2.0.0",
+    "handlebars": "^4.5.3",
     "hapi": "^6.8.1",
     "request": "^2.44.0"
   },
